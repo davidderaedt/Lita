@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="356" height="214" title="Copy Table"
+	creationComplete=" focusManager.setFocus(  nameTi);"
+	showCloseButton="true"
+	close="  closeMe()">
+
+
+	<mx:Script>
+		<![CDATA[
+			import mx.managers.PopUpManager;
+			import com.dehats.sqla.model.presentation.SQLStructureViewPM;
+			
+			
+			[Bindable] public var pm:SQLStructureViewPM;
+			
+			
+			public function copy():void
+			{
+				pm.copyTable(nameTi.text, radiogroup1.selectedValue==1);
+				closeMe();
+			}
+			
+			
+			public function closeMe():void
+			{
+				PopUpManager.removePopUp(this);
+			}
+			
+		]]>
+	</mx:Script>
+
+
+	<mx:Form x="10" y="10">
+		<mx:FormItem label="New Table Name">
+			<mx:TextInput id="nameTi"/>
+		</mx:FormItem>
+		<mx:RadioButtonGroup id="radiogroup1"/>
+		<mx:RadioButton label="Structure only" groupName="radiogroup1" selected="true" value="0"/>
+		<mx:RadioButton label="Structure and data" groupName="radiogroup1" value="1"/>
+	</mx:Form>
+	<mx:ControlBar horizontalAlign="center">
+		<mx:Button label="Copy"
+			click=" copy()"/>
+	</mx:ControlBar>
+	
+</mx:TitleWindow>

@@ -1,0 +1,360 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="800" height="600"
+	enabled="{ pm.mainModel.selectedTable!=null}" 
+	creationComplete=" onCreationComplete()">
+
+	<mx:Script>
+		<![CDATA[
+			import mx.binding.utils.BindingUtils;
+			import mx.controls.Alert;
+			import mx.events.CloseEvent;
+			import mx.controls.TextArea;
+			import mx.controls.DateField;
+			import mx.controls.CheckBox;
+			import com.dehats.air.sqlite.SQLType;
+			import mx.core.UIComponent;
+			import mx.controls.Label;
+			import mx.containers.FormHeading;
+			import mx.controls.Button;
+			import com.dehats.sqla.model.presentation.SQLDataViewPM;
+			import com.dehats.sqla.model.MainModel;
+			import mx.containers.FormItem;
+			import mx.controls.TextInput;
+			import mx.controls.dataGridClasses.DataGridColumn;
+			import com.dehats.sqla.model.presentation.MainPM;
+			import com.dehats.sqla.model.AssetManager; 
+
+			[Bindable]
+			public var pm:SQLDataViewPM;
+
+			// Stores form components for each column (selected item)
+			private var colToComponent:Object;			
+
+			// Stores form components for each column (new item)
+			private var colToComponent2:Object;			
+
+			private var selectedTable:SQLTableSchema;
+			
+			private function onCreationComplete():void
+			{
+				pm.mainModel.addEventListener(MainModel.TABLE_SELECTED, onTableSelected);		
+				
+				BindingUtils.bindSetter(fillForm, pm, ["mainModel", "selectedRecord"]);		
+			}	
+			
+			private function onTableSelected(pEvt:Event):void
+			{
+				selectedTable = pm.mainModel.selectedTable;			
+				
+				// clear forms
+				clearForms();
+
+				// reset colToComponent
+				colToComponent = {};
+				colToComponent2 = {};
+				
+				// clear DG columns
+				var coltab:Array = [] ;
+				
+				var totalCols:int = pm.mainModel.selectedTable.columns.length
+				
+				for ( var i:int = totalCols-1 ; i >= 0 ; i--) 
+				{
+					var col:SQLColumnSchema = pm.mainModel.selectedTable.columns[i] as SQLColumnSchema;
+					
+					// add form items
+					var formItem:FormItem = new FormItem();
+					var formItem2:FormItem = new FormItem();
+					
+					formItem.label = col.name;					
+					formItem2.label = col.name;
+					
+					formItem.percentWidth=100;
+					formItem2.percentWidth=100;
+					
+					var comp:UIComponent = getCompByType( col.dataType);
+					var comp2:UIComponent = getCompByType( col.dataType);
+
+					formItem.addChild( comp);
+					formItem2.addChild( comp2);
+					
+					dynForm.addChildAt( formItem, 1);
+					dynForm2.addChildAt( formItem2, 1);
+					
+					colToComponent[col.name] = comp;
+					colToComponent2[col.name] = comp2;
+					
+					// add datadg columns
+					var dgc:DataGridColumn = new DataGridColumn(col.name);
+					coltab.push(dgc);
+	
+				}
+				// reset dg columns
+				dataDG.columns =coltab.reverse() ;
+			}			
+			
+			private function clearForms():void
+			{
+
+				for ( var z:String in colToComponent) dynForm.removeChild(colToComponent[z].parent);
+				
+				for ( var z2:String in colToComponent2) dynForm2.removeChild(colToComponent2[z2].parent);
+
+			}
+
+			private function selectRecord(pData:Object):void
+			{
+				pm.selectRecord(pData);
+			}
+			
+			private function fillForm(pData:Object):void
+			{
+				//var pData:Object = pm.mainModel.selectedRecord;
+				// fill form
+				if(selectedTable==null) return;
+				
+				for ( var i:int = 0 ; i < selectedTable.columns.length ; i++)
+				{
+					var col:SQLColumnSchema = selectedTable.columns[i] as SQLColumnSchema;
+
+					var affinity:String = SQLType.getAffinity(col.dataType) ;
+											
+					switch (affinity)
+					{
+						case SQLType.BOOLEAN:
+							var cb:CheckBox = colToComponent[col.name] as CheckBox;
+							if( pData==null) cb.selected = false ;
+							else cb.selected = pData[col.name];
+							break;
+
+						case SQLType.DATE:
+							var df:DateField = colToComponent[col.name] as DateField;
+							if( pData==null)  df.selectedDate = null ;
+							else df.selectedDate = pData[col.name];						
+							break;
+
+						case SQLType.TEXT:
+							var ta:TextArea = colToComponent[col.name] as TextArea;
+							if( pData==null)  ta.text = "";
+							else ta.text = pData[col.name];
+							break;						
+
+						case SQLType.XML:
+						case SQLType.XMLLIST:
+							var ta2:TextArea = colToComponent[col.name] as TextArea;
+							if( pData==null)  ta2.text = "";
+							else ta2.text = (pData[col.name] as XML).toXMLString();
+							break;						
+
+
+						case SQLType.OBJECT:						
+							var lab:Label = colToComponent[col.name] as Label;
+							if( pData==null)  lab.text = "";
+							else lab.text = pData[col.name];
+							break;						
+						
+						default:
+							var ti:TextInput = colToComponent[col.name] as TextInput;
+							if( pData==null)  ti.text = "";
+							else ti.text = pData[col.name];						
+							break;
+						
+					}					
+				}			
+			}	
+			
+			private function getItemFrom(pCol2Comp:Object):Object
+			{
+				var vo:Object = {};
+				
+				for ( var i:int = 0 ; i < selectedTable.columns.length ; i++)
+				{
+					var col:SQLColumnSchema = selectedTable.columns[i] as SQLColumnSchema;
+					
+					if( ! col.primaryKey)
+					{
+						
+						var affinity:String = SQLType.getAffinity(col.dataType) ;
+
+						switch ( affinity)
+						{
+							case SQLType.BOOLEAN:
+							var cb:CheckBox = pCol2Comp[col.name] as CheckBox;
+							vo[ col.name ] = cb.selected ;
+							break;
+	
+							case SQLType.DATE:
+							var df:DateField = pCol2Comp[col.name] as DateField;
+							vo[ col.name ] = DateField.dateToString( df.selectedDate, "YYYY-MM-DD" ) ;
+							break;
+	
+							case SQLType.TEXT:
+							var ta:TextArea = pCol2Comp[col.name] as TextArea;
+							vo[ col.name ] = ta.text; 
+							break;						
+
+							case SQLType.XML:
+							case SQLType.XMLLIST:
+							var ta2:TextArea = pCol2Comp[col.name] as TextArea;
+							vo[ col.name ] = new XML(ta2.text); 
+							break;						
+
+
+							case SQLType.REAL:
+							case SQLType.NUMERIC:
+							var numTi:TextInput = pCol2Comp[col.name] as TextInput;
+							vo[ col.name ] = Number(numTi.text); 
+							break;						
+
+							case SQLType.INTEGER:
+							var intTi:TextInput = pCol2Comp[col.name] as TextInput;
+							vo[ col.name ] = int(intTi.text); 
+							break;						
+
+							case SQLType.OBJECT:
+							// you can't edit objects
+							break;						
+							
+							case SQLType.NONE:
+							var ti:TextInput = pCol2Comp[col.name] as TextInput;
+							vo[ col.name ] = ti.text;						
+							break;
+							
+						}			
+					}
+										
+				}	
+				
+				return vo;			
+			}
+		
+			private function getCompByType(pType:String):UIComponent
+			{
+				
+				var affinity:String = SQLType.getAffinity( pType);
+				
+				switch ( affinity)
+				{
+					case SQLType.BOOLEAN:
+						return new CheckBox();
+						break;
+					
+					case SQLType.DATE:
+						return new DateField();
+						break;
+					
+					case SQLType.INTEGER:
+						var ti:TextInput = new TextInput();
+						ti.restrict="0123456789";
+						return ti;
+						break;
+						
+					case SQLType.REAL:
+					case SQLType.NUMERIC:					
+						var ti2:TextInput = new TextInput();
+						ti2.restrict = "0.123456789";
+						return ti2; 
+						break;
+
+					
+					case SQLType.TEXT:
+					case SQLType.XML:
+					case SQLType.XMLLIST:
+						var ta:TextArea =new TextArea();
+						ta.percentWidth=100;
+						return ta;
+						break;
+
+					case SQLType.OBJECT:
+						return new Label();
+						break;
+					
+					case SQLType.NONE:
+						return new TextInput();
+						break;
+					
+				}
+				
+				return null;
+			}	
+			
+			private function deleteRecord():void
+			{
+				Alert.show("Are you sure you want to delete this record ?", "Warning", Alert.YES| Alert.NO, null,deleteRecordAnswer); 
+			}
+			
+			private function deleteRecordAnswer(pEvt:CloseEvent):void
+			{
+				if( pEvt.detail== Alert.YES) pm.mainModel.deleteRecord( )
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:Label x="10" y="12" text="{ pm.mainModel.tableRecords.length } record(s)"/>
+	
+	<mx:Button y="10" label="Export Data"
+		click=" pm.exportRecords()" right="218" icon="{AssetManager.ICON_EXPORT_TABLE}"/>
+
+	<mx:Button right="10" top="10"
+		label="Refresh" 
+		icon="{AssetManager.ICON_TABLE_REFRESH }"
+		click=" pm.refresh()" />
+
+	<mx:Button y="10" right="103"
+		label="Empty Table" 
+		icon="{AssetManager.ICON_EMPTY }"
+		click=" pm.askEmptyCurrentTable()"/>
+
+
+	<mx:VDividedBox left="10" top="40" bottom="10" right="10">
+	
+		<mx:DataGrid id="dataDG" width="100%" 
+			selectedItem="{ pm.mainModel.selectedRecord}"
+			change=" selectRecord (dataDG.selectedItem)"
+			dataProvider="{pm.mainModel.tableRecords}">
+		</mx:DataGrid>
+
+		<mx:HDividedBox width="100%" horizontalAlign="center">
+		
+			<mx:Form  id="dynForm"  
+				enabled="{ dataDG.selectedItem!=null}" 
+				height="100%" width="50%">
+				
+				<mx:FormHeading label="Selected Record" />
+			
+				<mx:FormItem>
+					<mx:Button label="Save Record" 
+						icon="{ AssetManager.ICON_SAVE}"
+						enabled="{ pm.mainModel.selectedRecord != null}"
+						click=" pm.updateRecord( getItemFrom( colToComponent) )" y="10" x="10"/>
+				</mx:FormItem>
+				
+				<mx:FormItem>
+					<mx:Button label="Delete record"
+						icon="{ AssetManager.ICON_DELETE}" 
+						enabled="{ pm.mainModel.selectedRecord != null}"
+						click=" deleteRecord()" y="70" x="10"/>					
+				</mx:FormItem>
+			
+			</mx:Form>
+			
+			
+			
+			<mx:Form id="dynForm2" 
+				height="100%"  width="50%">
+	
+				<mx:FormHeading label="New Record" />
+								
+				<mx:FormItem>			
+					<mx:Button label="Add Record" 
+						icon="{ AssetManager.ICON_ADD}"
+						click=" pm.createRecord( getItemFrom( colToComponent2 ))" x="10" y="40"/>					
+				</mx:FormItem>
+				
+			</mx:Form>
+
+		</mx:HDividedBox>		
+	
+	</mx:VDividedBox>
+		
+</mx:Canvas>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml" width="400" height="300"
+	titleIcon="{ AssetManager.ICON_TABLES}"
+	layout="absolute"
+	title="Tables">
+
+	<mx:Script>
+		<![CDATA[
+			import com.dehats.sqla.model.presentation.TableListPM;
+			import com.dehats.sqla.model.presentation.MainPM;
+			import com.dehats.sqla.model.AssetManager;
+			
+			[Bindable]
+			public var mainPM:TableListPM;
+			
+			private function myIconFunction(pItem:Object):Class
+			{
+				return AssetManager.ICON_TABLE;
+			}
+			
+		]]>
+	</mx:Script>
+<!--
+	<mx:Label x="10" y="10" text="Tables" fontWeight="bold"/> 
+			
+-->	<mx:List id="tableList"
+		styleName="TableList" 
+		iconFunction="myIconFunction"
+		selectedItem="{ mainPM.mainModel.selectedTable }"
+		change=" mainPM.selectTable( tableList.selectedItem as SQLTableSchema)"
+		labelField="name"
+		dataProvider="{mainPM.mainModel.dbTables}" 
+		top="0" left="0" right="0" bottom="40"></mx:List>
+	
+	<mx:Button label="Add Table" 
+		icon="{ AssetManager.ICON_CREATE_TABLE}"
+		click=" mainPM.createNewTable()" left="10" right="10" bottom="10"/>
+	
+</mx:Panel>

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" width="390" height="308"
+	showCloseButton="{ closable}"
+	close=" closeMe()"
+	title="Open File"
+	layout="absolute">
+
+	<mx:Script>
+		<![CDATA[
+			import com.dehats.sqla.model.presentation.MainPM;
+			import com.dehats.sqla.model.FileManager;
+			import mx.events.CloseEvent;
+			import mx.managers.PopUpManager;
+			import com.dehats.sqla.model.AssetManager;
+
+			
+			[Bindable]
+			public var closable:Boolean = true ;
+
+			[Bindable]
+			public var pm:MainPM;
+
+			[Bindable]			
+			private var selectedFile:File;
+			
+			private function promptOpen():void
+			{
+				var f:File = new File();
+				f.addEventListener(Event.SELECT, onFileSelected);
+				f.browseForOpen("Select a database file");
+			}
+			private function onFileSelected(pEvt:Event):void
+			{
+				selectedFile = pEvt.target as File;
+			}
+		
+			private function openFile(pHash:String):void
+			{
+				if( selectedFile==null) return ;
+				pm.openDBFile( selectedFile, pHash);
+				closeMe();			
+			}
+		
+			private function closeMe():void
+			{
+				pm.onOpenFileDialogClosed(null);
+				PopUpManager.removePopUp(this);
+			}
+			
+		]]>
+	</mx:Script>
+
+	<mx:Label y="10" text="Recently Opened Files" styleName="MyFakeFormItemLabel" left="10"/>
+
+	<mx:List id="fileList"
+		itemClick="selectedFile = new File( (event.itemRenderer.data).path) "
+		labelField="name"
+		dataProvider="{ pm.recentlyOpenedFiles }"
+		left="10" right="10" top="36" bottom="100"></mx:List>
+		
+	<mx:Button 
+		click=" promptOpen()"
+		label="..." right="10" bottom="70"/>
+
+	<mx:Label x="31" text="Hash*" bottom="42"/>
+	
+	<mx:TextInput id="hashTi" x="73"  bottom="40" displayAsPassword="true"
+		enter=" openFile(hashTi.text)" width="239"/>
+	
+	
+	<mx:TextInput id="pathTi" right="58" left="73" bottom="70"
+		text="{ selectedFile.nativePath}"/>
+	
+	<mx:Label x="42" text="File" bottom="72"/>
+	<mx:Label x="31" text="*If the db is encrypted, you must provide the encryption key hash" bottom="10"/>
+<!--	
+	<mx:Label x="42" text="Salt" bottom="10"/>
+	<mx:TextInput x="73" id="saltTi" bottom="10"/>
+	
+-->	<mx:ControlBar horizontalAlign="center">
+		<mx:Button label="Open"
+			enabled="{ selectedFile!=null}"
+			click=" openFile(hashTi.text)" styleName="WhiteButton"/>
+	</mx:ControlBar>
+	
+</mx:TitleWindow>

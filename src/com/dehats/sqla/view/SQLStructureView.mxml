@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas enabled="{ pm.mainModel.selectedTable!=null}"
+		   height="600"
+		   width="800"
+		   xmlns:components="com.dehats.flex.component.*"
+		   xmlns:mx="http://www.adobe.com/2006/mxml"
+		   xmlns:ns1="com.adobe.flex.extras.controls.*">
+		   
+	<mx:Script>
+		<![CDATA[
+			import mx.managers.PopUpManager;
+			import mx.controls.dataGridClasses.DataGridColumn;
+			import com.dehats.air.sqlite.SQLType;
+			import com.dehats.sqla.model.presentation.SQLStructureViewPM;
+			import com.dehats.sqla.model.presentation.MainPM;
+			import com.dehats.sqla.model.MainModel;
+			import com.dehats.sqla.model.AssetManager;
+			
+			[Bindable]
+			public var pm:SQLStructureViewPM;
+			
+			private function getAffinity(pItem:Object, pCol:DataGridColumn):String
+			{
+				var col:SQLColumnSchema = pItem as  SQLColumnSchema;
+				return SQLType.getAffinity( col.dataType);
+			}
+		
+			private function addField():void
+			{				
+				//typeCMB.selectedItem.toString()
+				pm.mainModel.addColumn(colNameTi.text, typeACTI.text, nullCB.selected, uniqueCb.selected, defaultTi.text);
+				colNameTi.text="";
+			}
+			
+			public function promptCopyTableDialog():void
+			{
+				var win:CopyTableDialog = PopUpManager.createPopUp(this, CopyTableDialog, true) as CopyTableDialog;
+				PopUpManager.centerPopUp(win);
+				win.pm = pm;
+			}				
+			
+		]]>
+	</mx:Script>
+
+	<mx:Label x="10" y="10" 
+		styleName="ImportantLabel" 
+		text="Table Name"/>
+	
+	<mx:TextInput id="tableNameTi"
+		enter="pm.mainModel.renameTable( tableNameTi.text)"
+		text="{ pm.mainModel.selectedTable.name}" 
+		width="118"  x="102" y="8" />
+	
+	<mx:Button x="228" y="8" label="Rename" 
+		icon="{ AssetManager.ICON_REFRESH_TABLE}"
+		click="pm.mainModel.renameTable( tableNameTi.text)"/>
+		
+
+	<mx:Button y="8" label="Export Structure" right="131"
+		icon="{AssetManager.ICON_EXPORT_TABLE}"
+		click=" pm.exportTable()"/>
+	
+	<mx:Button label="Delete Table"  y="8" right="10"
+		icon="{AssetManager.ICON_DELETE}"
+		click=" pm.askDropCurrentTable()"/>
+
+	<mx:Button y="8" 
+		icon="{AssetManager.ICON_CREATE_TABLE}"
+		label="Copy Table"
+		click="  promptCopyTableDialog()" right="273"/>
+	
+	<mx:DataGrid id="columnsDG"
+		change=" pm.mainModel.selectedColumn = columnsDG.selectedItem as SQLColumnSchema "
+		selectedItem="{pm.mainModel.selectedColumn}"
+		dataProvider="{ pm.mainModel.selectedTable.columns }" left="10" right="10" bottom="291" top="38">
+		<mx:columns>
+			<mx:DataGridColumn headerText="Field Name" dataField="name"/>
+			<mx:DataGridColumn headerText="Data Type" dataField="dataType"/>
+			<mx:DataGridColumn headerText="Type Affinity" dataField="dataType" labelFunction="getAffinity"/>			
+			<mx:DataGridColumn headerText="Primary Key" dataField="primaryKey"  width="100"/>
+			<mx:DataGridColumn headerText="Allow Null" dataField="allowNull"  width="100"/>
+			<mx:DataGridColumn headerText="Auto Increment" dataField="autoIncrement" width="100"/>
+			
+		</mx:columns>
+	</mx:DataGrid>
+	
+	<mx:HBox bottom="10" height="273" left="10" right="10">
+	
+		<mx:Form x="10" bottom="10" height="100%"
+			enabled="{ pm.mainModel.selectedColumn!=null}" width="50%">
+			
+			<mx:FormHeading label="Selected Field"/>
+			<mx:FormItem label="Field Name" direction="horizontal">			
+				<mx:TextInput id="selectedColNameTi" 
+					enter="pm.mainModel.renameColumn( selectedColNameTi.text);"
+					text="{ pm.mainModel.selectedColumn.name}"/>
+				<mx:Button label="Rename"
+					icon="{AssetManager.ICON_REFRESH}"
+					click=" pm.mainModel.renameColumn( selectedColNameTi.text);"/>				
+			</mx:FormItem>
+			<mx:FormItem label="Field Type">
+					<mx:Label id="dataTypeLabel" text="{ pm.mainModel.selectedColumn.dataType }"/>								
+			</mx:FormItem>
+			<mx:FormItem label="Allow null">
+					<mx:CheckBox enabled="false" selected="{ pm.mainModel.selectedColumn.allowNull}"	/>					
+			</mx:FormItem>
+			<mx:FormItem label="Is Primary key">
+					<mx:CheckBox enabled="false" selected="{ pm.mainModel.selectedColumn.primaryKey }"/>								
+			</mx:FormItem>
+			<mx:FormItem label="Auto increment">
+					<mx:CheckBox enabled="false" selected="{ pm.mainModel.selectedColumn.autoIncrement }"/>								
+			</mx:FormItem>
+			<mx:FormItem label="Add Index" direction="horizontal">
+				<mx:TextInput id="indexNameTi"/>
+				<mx:Button label="Add" 
+					enabled="{indexNameTi.text.length>0}"
+					icon="{AssetManager.ICON_ADD_KEY}"
+					click=" pm.mainModel.addIndex( indexNameTi.text); indexNameTi.text=''"/>
+			</mx:FormItem>
+			<mx:FormItem>
+			</mx:FormItem>
+			
+			<mx:FormItem>
+				<mx:Button label="Delete Field" 
+					icon="{ AssetManager.ICON_DELETE}"
+					click=" pm.askDropColumn()"/>			
+			</mx:FormItem>
+			
+		</mx:Form>
+
+		<mx:Form 
+			enabled="{ pm.mainModel.selectedTable != null}" 
+			x="345" bottom="10" height="100%" width="50%">
+		
+			<mx:FormHeading label="New Field" />
+			
+			<mx:FormItem label="Field Name">
+				<mx:TextInput id="colNameTi" text=""/>
+			</mx:FormItem>
+			<mx:FormItem label="Field Type">
+				<components:AutoComplete id="typeACTI"
+					dataProvider="{SQLType.TYPES}"/>			
+<!--				<mx:ComboBox id="typeCMB" dataProvider="{ SQLType.TYPES}" /> -->
+				<mx:Label text="(use up/down arrows for suggestions)"/>
+			</mx:FormItem>
+			<mx:FormItem label="Default Value">
+				<mx:TextInput id="defaultTi"/>
+			</mx:FormItem>
+			<mx:FormItem>
+				<mx:CheckBox id="nullCB" label="Allow null" selected="true"/>
+			</mx:FormItem>
+			<mx:FormItem>
+				<mx:CheckBox id="uniqueCb" label="Unique" enabled="false"/>
+			</mx:FormItem>
+			<mx:FormItem>
+				<mx:Button label="Add Field" 
+					enabled="{colNameTi.text.length>0}"
+					icon="{ AssetManager.ICON_ADD}"
+					click=" addField();"/>
+			</mx:FormItem>
+		</mx:Form>
+			
+	</mx:HBox>
+				
+</mx:Canvas>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+ <configuration xmlns="http://ns.adobe.com/air/framework/update/configuration/1.0">
+<!-- Configuration File Template for Update Framework
+
+	Specifies configuration parameters for the Update Framework for Adobe AIR Applications
+--> 
+   
+   <!-- URL to the update descriptor. Required. -->
+   <url>http://www.dehats.com/projets/lita/update.xml</url>
+   
+   <!-- Delay (in days) between two update checks. Optional. Defaults to 0 that means no periodical checks are done. -->
+   <delay>1</delay>
+   
+   <!-- 
+   The defaultUI tag is only used by the ApplicationUpdater_UI library. The headless library ignores these elements.
+   It's a list of dialogs that set the visibility property.
+   Optional for ApplicationUpdater_UI library.
+   By default all dialogs are visible.
+   -->
+   <defaultUI>
+       <dialog name="checkForUpdate" visible="false" />
+       <dialog name="downloadUpdate" visible="true" />
+       <dialog name="downloadProgress" visible="true" />
+       <dialog name="installUpdate" visible="true" />
+       <dialog name="fileUpdate" visible="true" />  
+       <dialog name="unexpectedError" visible="true" />        
+   </defaultUI>
+</configuration>

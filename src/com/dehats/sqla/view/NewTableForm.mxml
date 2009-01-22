@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas creationComplete=" focusManager.setFocus(tableNameTi) "
+		   xmlns:adobe="http://www.adobe.com/2006/fc"
+		   xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:components="com.dehats.flex.component.*">
+	<mx:Script>
+		<![CDATA[
+			import com.dehats.air.sqlite.SQLType;
+			import com.dehats.sqla.model.MainModel;
+//			import com.dehats.air.SQLiteDBHelper;
+
+
+			public var mainModel:MainModel;
+
+			private function createTable():void
+			{
+
+				var colDef:String=colNameTi.text + ' ' + dataTypeTi.text;
+
+				if (primaryCb.selected)
+					colDef+=" PRIMARY KEY";
+				if (incrementCb.selected)
+					colDef+=" AUTOINCREMENT";
+
+				mainModel.createTable(tableNameTi.text, colDef);
+
+				dispatchEvent(new Event('create'));
+			}
+		]]>
+	</mx:Script>
+	<mx:Form defaultButton="{createBt}"
+			 x="0"
+			 y="0">
+		<mx:FormItem label="Table name">
+			<mx:TextInput id="tableNameTi"/>
+		</mx:FormItem>
+		<mx:FormItem>
+			<mx:Label text="First Field"/>
+		</mx:FormItem>
+		<mx:FormItem label="Field Name">
+			<mx:TextInput id="colNameTi"
+						  text="{ tableNameTi.text+'id' }"/>
+		</mx:FormItem>
+		<mx:FormItem label="Field Type">
+			<!--		<mx:TextInput id="dataTypeTi" text="INTEGER"/>	-->
+			<components:AutoComplete id="dataTypeTi"
+								creationComplete="dataTypeTi.text='INTEGER'"			
+								dataProvider="{ SQLType.TYPES}"								
+								text="INTEGER"/>
+		</mx:FormItem>
+		<mx:FormItem>
+			<mx:CheckBox id="primaryCb"
+						 label="Primary Key"
+						 selected="true"/>
+		</mx:FormItem>
+		<mx:FormItem>
+			<mx:CheckBox id="incrementCb"
+						 label="Auto increment"
+						 selected="true"/>
+		</mx:FormItem>
+		<mx:FormItem>
+			<mx:Button click=" createTable()"
+					   enabled="{tableNameTi.text.length>0}"
+					   id="createBt"
+					   label="Create"/>
+		</mx:FormItem>
+	</mx:Form>
+</mx:Canvas>
