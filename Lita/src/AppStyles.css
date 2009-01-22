@@ -1,0 +1,111 @@
+/* CSS file */
+FormItemLabel
+{
+	fontSize: 12;
+}
+
+.ImportantLabel
+{
+	fontSize: 12;
+}
+
+global
+{
+	fontFamily: Arial;
+	font-size:11;
+	backgroundGradientAlphas: 1.0, 1.0;
+	backgroundGradientColors: #075CF7, #02074B;
+	/*backgroundDisabledColor: #FF3366;*/
+	
+}
+ApplicationControlBar
+{
+	fillAlphas: 0.5, 1.0;
+}
+Label.MainTitle
+{
+	fontSize: 20;
+	fontStyle: normal;
+	textDecoration: normal;
+	fontWeight: normal;
+	/*fontFamily: Georgia;*/
+}
+
+.TableList
+{
+	font-weight:normal;
+	fontSize: 12;
+}
+
+TitleWindow
+{
+	borderColor: #165BE8;
+	borderAlpha: 1.0;
+	titleStyleName: titleWindowTitle;
+}
+
+.WhiteButton
+{
+	color:#FFFFFF;
+}
+Panel
+{
+	titleStyleName: panelTitle;
+}
+TabBar
+{
+	disabled-color:#BBBBBB;
+	text-roll-over-color:#666666;
+	text-selected-color:#333333;
+	color: #FFFFFF;
+	fontSize: 14;
+	fontWeight: normal;
+	tabStyleName: tabBarTab;
+	firstTabStyleName: tabBarFirstTab;
+	selectedTabTextStyleName: tabBarSelectedTabText;
+}
+
+
+
+.SelectedTabText
+{
+	color:#000000;
+}
+
+ToolTip
+{
+	fontSize: 11;
+}
+.titleWindowTitle
+{
+	color: #FFFFFF;
+	fontSize: 14;
+}
+.panelTitle
+{
+	color: #FFFFFF;
+	fontSize: 14;
+}
+Form
+{
+	border-style:solid;
+	backgroundColor: #E4DDFE;
+}
+.tabBarTab
+{
+	fontWeight: normal;
+}
+.tabBarFirstTab
+{
+	fontWeight: normal;
+}
+.tabBarSelectedTabText
+{
+}
+
+TextArea.statement
+{
+	font-family:"Courier New";
+	fontSize: 12;
+}
+

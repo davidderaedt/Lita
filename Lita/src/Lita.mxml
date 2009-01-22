@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:WindowedApplication xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute"
+	width="960"
+	height="600"
+	showStatusBar="false"
+	creationComplete=" onCreationComplete()"
+	invoke=" mainPM.onInvoke(event);"
+	implements="com.dehats.sqla.model.presentation.IMainView"
+	xmlns:view="com.dehats.sqla.view.*">
+
+	<mx:Style source="AppStyles.css"/>
+
+	<mx:Script>
+		<![CDATA[
+			import com.dehats.sqla.view.CopyTableDialog;
+			import com.dehats.sqla.view.ReencryptionDialog;
+			import com.dehats.sqla.model.presentation.IMainView;
+			import com.dehats.sqla.view.CreateDBDialog;
+			import com.dehats.sqla.view.AboutWin;
+			import com.dehats.sqla.view.OpenFileDialog;
+			import com.dehats.sqla.model.AssetManager;
+			import com.dehats.sqla.model.presentation.MainPM;
+			import mx.controls.Alert;
+			import mx.managers.PopUpManager;
+			import mx.containers.TitleWindow;
+			import com.dehats.sqla.view.NewTableForm;
+			import mx.events.CloseEvent;
+			import com.dehats.sqla.model.MainModel; 
+
+			[Bindable]
+			private var mainPM:MainPM = new MainPM(); 
+			
+			
+			private function onCreationComplete():void
+			{								
+								
+				nativeApplication.addEventListener(Event.EXITING, onExiting);
+				
+				nativeApplication.menu = nativeWindow.menu = mainPM.createNativeMenu();
+								
+				mainPM.initialize( this);
+				
+				center();
+				
+			}	
+
+			// workaround to fix the quit bug on OSX with the update framework			
+			private function onExiting(pEvt:Event):void
+			{
+				var opened:Array = nativeApplication.openedWindows;
+				for (var i:int = 0; i < opened.length; i ++) {
+					opened[i].close();
+				}
+
+			}	
+					
+			private function center():void
+			{
+				nativeWindow.x = (Capabilities.screenResolutionX - nativeWindow.width) / 2; 
+				nativeWindow.y = (Capabilities.screenResolutionY - nativeWindow.height) / 2;				
+			}	
+			
+			// Dialogs
+
+			public function promptOpenFileDialog(pClosable:Boolean=false):void
+			{				
+				var win:OpenFileDialog = PopUpManager.createPopUp(this, OpenFileDialog, true) as OpenFileDialog;
+				PopUpManager.centerPopUp(win);
+				win.pm = mainPM;
+				win.closable = pClosable;
+			}	
+			
+			
+			public function promptCreateDBDialog():void
+			{
+				var win:CreateDBDialog = PopUpManager.createPopUp(this, CreateDBDialog, true) as CreateDBDialog;
+				win.pm = mainPM;
+				PopUpManager.centerPopUp(win);
+			}
+
+			public function promptCopyTableDialog():void
+			{
+				structureTab.promptCopyTableDialog();
+			}			
+			
+			public function promptReencryptDialog():void
+			{
+				var win:ReencryptionDialog = PopUpManager.createPopUp(this, ReencryptionDialog, true) as ReencryptionDialog;
+				win.pm = mainPM;
+				PopUpManager.centerPopUp(win);				
+			}
+
+			public function promptAboutDialog():void
+			{
+				var win:AboutWin = PopUpManager.createPopUp(this, AboutWin, true) as AboutWin;
+				PopUpManager.centerPopUp(win);
+				var ns:Namespace = new Namespace(nativeApplication.applicationDescriptor.namespaceDeclarations()[0]);
+				win.version = nativeApplication.applicationDescriptor.ns::version;
+				win.pm = mainPM;
+			}			
+			
+		]]>
+	</mx:Script>
+
+		<mx:ApplicationControlBar x="29" y="49" dock="true">
+		
+				<mx:Image source="{ AssetManager.LOGO_ICON}"/>
+				
+				<mx:Label text="{ mainPM.docTitle}" 
+					toolTip="{ mainPM.fileInfos}" 
+					fontSize="12"/>
+				
+				<mx:Spacer width="100%"/>
+				
+				<mx:Button label="Open DB File"
+					icon="{AssetManager.ICON_OPEN_DB}"
+					click=" mainPM.promptOpenFile()"/>
+					
+				<mx:Button label="Create DB File"
+					icon="{ AssetManager.ICON_CREATE_DB}"
+					click=" mainPM.promptCreateDBFile()"/>
+					
+				<mx:Button label="(Re)encrypt"
+					icon="{ AssetManager.ICON_KEY_DB}"
+					click=" mainPM.promptReencrypt();"/>
+				
+				<mx:Button label="Export DB"
+					icon="{AssetManager.ICON_EXPORT_DB}"
+					click=" mainPM.exportDB()"/>
+				
+				<mx:Button label="Compact DB"
+					icon="{AssetManager.ICON_COMPACT_DB}"
+					click=" mainPM.compact()"/>
+
+				<mx:Button label="About"
+					icon="{ AssetManager.ICON_HELP}"
+					click=" mainPM.promptAboutDialog()"/>
+					
+		</mx:ApplicationControlBar>
+
+		<view:TableListView
+			mainPM="{ mainPM.tableListPM}" left="10" top="10" bottom="10" width="189"/>		
+		
+		<mx:TabNavigator left="207" bottom="10" top="10" right="10" creationPolicy="all"
+			selectedTabTextStyleName="SelectedTabText">
+
+			<view:SQLStructureView id="structureTab" label="Structure" width="100%" height="100%" 
+				pm="{ mainPM.sqlStructureViewPM }"/>
+
+			<view:SQLDataView id="dataView" label="Data" width="100%" height="100%" 
+				pm="{ mainPM.sqldataViewPM}"/>			
+
+			<view:IndicesView label="Indices" width="100%" height="100%" 
+				pm="{ mainPM.indicesPM}"/>
+			
+			<view:SQLStatementView label="SQL" width="100%" height="100%"
+				pm="{ mainPM.sqlStatementPM}" />
+					
+		</mx:TabNavigator>		
+		
+
+</mx:WindowedApplication>

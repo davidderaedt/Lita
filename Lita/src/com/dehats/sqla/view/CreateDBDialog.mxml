@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="438" height="196" title="Create New DB"
+	showCloseButton="true"
+	close=" PopUpManager.removePopUp(this)">
+
+	<mx:Script>
+		<![CDATA[
+			import com.dehats.sqla.model.presentation.MainPM;
+			import mx.managers.PopUpManager;
+
+			[Bindable]
+			public var pm:MainPM;
+			
+			[Bindable]
+			private var filePath:String;
+
+			private var pwd:String;
+			
+			private function browse():void
+			{
+				var f:File = new File();
+				f.addEventListener(Event.SELECT, onFileSelected);
+				f.browseForSave("Create a DB file");				
+			}
+			
+			private function onFileSelected(pEvt:Event):void
+			{
+				var f:File = pEvt.target as File;
+				filePath = f.nativePath;
+			}
+			
+			private function submit():void
+			{
+				pm.createDBFile( new File(filePath), pwd);
+				PopUpManager.removePopUp(this);
+			}
+			
+		]]>
+	</mx:Script>
+
+	<mx:Label x="55" y="17" text="Database File"/>
+	<mx:TextInput id="pathTi" y="15"
+		text="{ filePath}" 
+		change=" filePath = pathTi.text"  left="133" right="88"/>
+	
+	<mx:Button y="15" label="Browse" 
+		click=" browse()" right="10"/>
+		
+	<mx:Label x="10" y="53" text="Password (Optionnal)*"/>
+	<mx:TextInput id="pwdTi" 
+		enter=" submit()"
+		displayAsPassword="true"
+		y="51"
+		change=" pwd = pwdTi.text" left="133" right="10"/>
+	<mx:Label x="10" y="79" text="*Encryption will be done using the SimpleEncryptionKeyGenerator class"/>
+	
+	<mx:ControlBar horizontalAlign="center">
+		<mx:Button label="Create"  
+			enabled="{ pathTi.text.length>0}"
+			click=" submit()" styleName="WhiteButton"/>
+	</mx:ControlBar>
+	
+</mx:TitleWindow>

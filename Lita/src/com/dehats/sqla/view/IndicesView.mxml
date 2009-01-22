@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="608" height="300">
+
+
+	<mx:Script>
+		<![CDATA[
+			import com.dehats.sqla.model.presentation.IndicesPM;
+			import mx.events.CloseEvent;
+			import mx.controls.Alert;
+			import com.dehats.sqla.model.presentation.MainPM;
+			
+			[Bindable]
+			public var pm:IndicesPM;
+			
+			private var tmpIndex:SQLIndexSchema;
+			
+			public function removeIndex(pItem:Object):void
+			{
+				tmpIndex = pItem as SQLIndexSchema;
+				Alert.show("Are you sure you want to drop this index ("+ tmpIndex.name +") ?", "Warning", Alert.YES|Alert.NO, null, answer);
+			}
+			
+			private function answer(pEvt:CloseEvent):void
+			{
+				if( pEvt.detail==Alert.YES)
+				{
+					if( tmpIndex!=null) pm.removeIndex( tmpIndex);
+				}
+			}
+			
+		]]>
+	</mx:Script>
+
+	<mx:DataGrid y="36" left="10"
+		dataProvider="{ pm.model.dbIndices}" width="527" height="213">
+
+		<mx:columns>
+			<mx:DataGridColumn headerText="Index Name" dataField="name"/>
+			<mx:DataGridColumn headerText="Table" dataField="table"/>
+			<mx:DataGridColumn headerText="Remove" dataField="table" width="75">
+				<mx:itemRenderer>
+					<mx:Component>
+						<mx:Button label="X" click="parentDocument.removeIndex(data)"/>
+					</mx:Component>
+				</mx:itemRenderer>
+			</mx:DataGridColumn>
+		</mx:columns>
+		
+	</mx:DataGrid>
+	<mx:Label x="10" y="10" text="Index List"/>
+	
+</mx:Canvas>

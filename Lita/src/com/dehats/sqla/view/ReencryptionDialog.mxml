@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="414" height="158" title="(Re)encrypt Your Database"
+	showCloseButton="true"
+	close=" PopUpManager.removePopUp(this)">
+
+	<mx:Script>
+		<![CDATA[
+			import mx.managers.PopUpManager;
+			import com.dehats.sqla.model.presentation.MainPM;
+			
+			[Bindable]
+			public var pm:MainPM;
+			
+			private function submit(pPwd:String):void
+			{
+				if(pPwd.length==0) return;
+				
+				pm.reencrypt( pPwd);
+				 
+				PopUpManager.removePopUp(this);
+			}
+			
+		]]>
+	</mx:Script>
+
+	<mx:Label x="10" y="10" text="Password"/>
+	<mx:Label x="10" text="*Encryption will be done using the SimpleEncryptionKeyGenerator class" bottom="10"/>
+	
+	<mx:TextInput y="8" id="pwdTi" displayAsPassword="true"
+		enter=" submit(pwdTi.text)" left="73" right="20"/>
+	
+	<mx:ControlBar horizontalAlign="center">
+		<mx:Button label="Button" styleName="WhiteButton"
+			click=" submit(pwdTi.text)"
+			enabled="{ pwdTi.text.length>0}"/>
+	</mx:ControlBar>
+	
+</mx:TitleWindow>
