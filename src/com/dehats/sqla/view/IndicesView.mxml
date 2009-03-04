@@ -31,8 +31,8 @@
 		]]>
 	</mx:Script>
 
-	<mx:DataGrid y="36" left="10"
-		dataProvider="{ pm.model.dbIndices}" width="527" height="213">
+	<mx:DataGrid top="36" left="10"
+		dataProvider="{ pm.model.dbIndices}" right="10" bottom="10">
 
 		<mx:columns>
 			<mx:DataGridColumn headerText="Index Name" dataField="name"/>
