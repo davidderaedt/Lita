@@ -26,11 +26,11 @@ package com.dehats.sqla.model
 
 		public var docTitle:String;
 		
-		public var dbTables:Array ; 
+		public var dbTables:Array ;
 		
 		public var dbIndices:Array;
 
-		public var selectedTable:SQLTableSchema; 
+		public var selectedTable:SQLTableSchema;
 
 		public var tableRecords:Array;
 		
@@ -42,14 +42,14 @@ package com.dehats.sqla.model
 						
 		public function MainModel()
 		{
-		}			
+		}
 		
 		// DataBase
 		
 		public function openDBFile(pFile:File, isNew:Boolean=false, pHash:String=""):void
 		{
 			
-			dbFile = pFile ;		
+			dbFile = pFile ;
 			
 			var key:ByteArray;
 			
@@ -68,7 +68,7 @@ package com.dehats.sqla.model
 			
 			docTitle = dbFile.name+' - '+ (dbFile.size/1024)+' Kb' ;
 			
-			loadSchema();				
+			loadSchema();
 			
 			if(dbTables.length>0) selectTable(dbTables[0] );
 
@@ -76,14 +76,14 @@ package com.dehats.sqla.model
 		
 		public function createDBFile(pFile:File, pPassword:String=""):void
 		{
-			dbFile = pFile ;		
+			dbFile = pFile ;
 			
 			var key:ByteArray;
 			
-			if(pPassword && pPassword.length>0) 
-			{		
+			if(pPassword && pPassword.length>0)
+			{
 				try
-				{		
+				{
 					key = new SimpleEncryptionKeyGenerator().getEncryptionKey(pPassword);
 				}
 				catch(e:ArgumentError)
@@ -104,7 +104,7 @@ package com.dehats.sqla.model
 			}
 			
 			
-			docTitle = dbFile.name+' - '+ (dbFile.size/1024)+' Kb' ;			
+			docTitle = dbFile.name+' - '+ (dbFile.size/1024)+' Kb' ;
 		}
 
 		public function reencrypt(pPassword:String):void
@@ -138,13 +138,47 @@ package com.dehats.sqla.model
 		private function loadSchema():void
 		{
 			schemas =  db.getSchemas();
+			schemas.tables.sortOn("name", Array.CASEINSENSITIVE);
 			dbTables = schemas.tables;
+			schemas.indices.sort(sortIndices);
 			dbIndices = schemas.indices;
+		}
+		
+		private function sortIndices(a:SQLIndexSchema, b:SQLIndexSchema):Number
+		{
+			var aTable:String = a.table.toLowerCase();
+			var bTable:String = b.table.toLowerCase();
+			
+			// sort alphabetically by table name, then index name
+			if (aTable < bTable)
+			{
+				return -1;
+			}
+			
+			if (aTable > bTable)
+			{
+				return 1;
+			}
+			
+			var aName:String = a.name.toLowerCase();
+			var bName:String = b.name.toLowerCase();
+			
+			if (aName < bName)
+			{
+				return -1;
+			}
+			
+			if (aName > bName)
+			{
+				return 1;
+			}
+			
+			return 0;
 		}
 		
 		public function compact():Boolean
 		{
-			if(dbFile==null) return false;		
+			if(dbFile==null) return false;
 			db.compact();
 			return true;
 		}
@@ -159,7 +193,7 @@ package com.dehats.sqla.model
 				var table:SQLTableSchema = dbTables[i];
 				str+= table.sql + ";\n\n";
 				
-				if(pData) str+= db.exportTableRecords( table)+"\n\n";				
+				if(pData) str+= db.exportTableRecords( table)+"\n\n";
 				
 			}
 			
@@ -169,13 +203,13 @@ package com.dehats.sqla.model
 		// Tables
 		
 		public function selectTable(pTable:SQLTableSchema):void
-		{							
+		{
 			selectedTable = pTable ;
 			selectedColumn = null ;
-			selectedRecord = null ;			
-			refreshRecords();		
-			dispatchEvent( new Event(TABLE_SELECTED));	
-		}		
+			selectedRecord = null ;
+			refreshRecords();
+			dispatchEvent( new Event(TABLE_SELECTED));
+		}
 		
 		public function createTable(pTableName:String, pDefaultCol:String):void
 		{
@@ -206,7 +240,7 @@ package com.dehats.sqla.model
 			var tableName:String = selectedTable.name;
 			db.emptyTable(selectedTable);
 			loadSchema();
-			selectedRecord = null ;				
+			selectedRecord = null ;
 			tableRecords = [];
 			selectTable(getTableByName( tableName));
 		}
@@ -260,11 +294,11 @@ package com.dehats.sqla.model
 			selectedColumn = selectedTable.columns[j];
 		}
 		
-		// Indices 
+		// Indices
 		
 		public function addIndex(pName:String):void
 		{
-			db.createIndex(pName, selectedTable, selectedColumn); 
+			db.createIndex(pName, selectedTable, selectedColumn);
 			loadSchema();
 		}
 		
@@ -278,34 +312,34 @@ package com.dehats.sqla.model
 
 		public function selectRecord(pData:Object):void
 		{
-			selectedRecord = pData;			
+			selectedRecord = pData;
 		}
 		
 		public function updateRecord(pVo:Object):void
-		{			 
+		{
 			var i:int = tableRecords.indexOf(selectedRecord);
-			db.updateRecord(selectedTable, selectedRecord, pVo);	
+			db.updateRecord(selectedTable, selectedRecord, pVo);
 			refreshRecords();
 			selectRecord( tableRecords[i] );
 		}
 		
 		public function createRecord(pVo:Object):void
 		{
-			db.createRecord(selectedTable, pVo);			
+			db.createRecord(selectedTable, pVo);
 			refreshRecords();
-			selectRecord( tableRecords[tableRecords.length-1] );			
+			selectRecord( tableRecords[tableRecords.length-1] );
 		}
 		
 		public function deleteRecord():void
 		{
-			db.deleteRecord( selectedTable, selectedRecord);			
+			db.deleteRecord( selectedTable, selectedRecord);
 			refreshRecords();
 		}
 		
 		public function refreshRecords():void
 		{
-			tableRecords = db.getTableRecords(selectedTable);			
-			selectedRecord=null;			
+			tableRecords = db.getTableRecords(selectedTable);
+			selectedRecord=null;
 		}
 		
 		public function exportRecords():String
