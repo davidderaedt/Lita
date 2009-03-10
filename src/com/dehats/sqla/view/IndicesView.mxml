@@ -37,6 +37,7 @@
 		<mx:columns>
 			<mx:DataGridColumn headerText="Index Name" dataField="name"/>
 			<mx:DataGridColumn headerText="Table" dataField="table"/>
+			<mx:DataGridColumn headerText="Creation Statement" dataField="sql"/>			
 			<mx:DataGridColumn headerText="Remove" dataField="table" width="75">
 				<mx:itemRenderer>
 					<mx:Component>

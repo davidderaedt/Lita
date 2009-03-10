@@ -84,7 +84,7 @@ package com.dehats.sqla.model
 			{
 				try
 				{
-					key = new SimpleEncryptionKeyGenerator().getEncryptionKey(pPassword);
+					key = new SimpleEncryptionKeyGenerator().getEncryptionKey(pPassword, true);
 				}
 				catch(e:ArgumentError)
 				{
@@ -111,7 +111,7 @@ package com.dehats.sqla.model
 		{
 			if( dbFile==null ) return;
 			
-			var key:ByteArray = new SimpleEncryptionKeyGenerator().getEncryptionKey(pPassword);
+			var key:ByteArray = new SimpleEncryptionKeyGenerator().getEncryptionKey(pPassword, true);
 			db.reencrypt(key);
 		}
 
