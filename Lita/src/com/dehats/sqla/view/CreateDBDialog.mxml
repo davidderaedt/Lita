@@ -16,7 +16,7 @@
 			[Bindable]
 			private var filePath:String;
 
-			private var pwd:String;
+			private var pwd:String="";
 
 			
 			private function browse():void
@@ -36,7 +36,13 @@
 			{
 				var testGen:SimpleEncryptionKeyGenerator = new SimpleEncryptionKeyGenerator();
 				
-				if(testGen.validateStrongPassword(pwd))
+				if(pwd=="")
+				{
+					pm.createDBFile( new File(filePath), pwd);
+					PopUpManager.removePopUp(this);					
+				}
+				
+				else if(testGen.validateStrongPassword(pwd))
 				{
 					pm.createDBFile( new File(filePath), pwd);
 					PopUpManager.removePopUp(this);					
