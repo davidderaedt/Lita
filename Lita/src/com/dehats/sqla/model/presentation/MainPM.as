@@ -18,7 +18,9 @@ package com.dehats.sqla.model.presentation
 	[Bindable]
 	public class MainPM extends AbstractPM
 	{
-					
+		
+		public static const FILE_CHANGED:String="fileHasChanged";	
+		
 		public var sqlStatementPM:SQLStatementPM ;
 		public var tableListPM:TableListPM ;
 		public var sqldataViewPM:SQLDataViewPM ;
@@ -82,7 +84,7 @@ package com.dehats.sqla.model.presentation
 			
 			fileManager.addRecentlyOpened(pFile);
 			
-			dispatchEvent(new Event("fileHasChanged"));
+			dispatchEvent(new Event(FILE_CHANGED));
 		}
 		
 		
@@ -92,7 +94,7 @@ package com.dehats.sqla.model.presentation
 			
 			fileManager.addRecentlyOpened(pFile);
 			
-			dispatchEvent(new Event("fileHasChanged"));
+			dispatchEvent(new Event(FILE_CHANGED));
 			
 			tableListPM.createNewTable();
 		}
@@ -101,12 +103,14 @@ package com.dehats.sqla.model.presentation
 		[Bindable("fileHasChanged")]
 		public function get docTitle():String
 		{
+			if(mainModel.dbFile==null || mainModel.dbFile.exists==false) return "?";
 			return mainModel.dbFile.name+ " - "+  (mainModel.dbFile.size/1024) +" kb";
 		}
 
 		[Bindable("fileHasChanged")]
 		public function get fileInfos():String
 		{
+			if(mainModel.dbFile==null || mainModel.dbFile.exists==false) return "No infos available"
 			return mainModel.dbFile.nativePath;
 		}
 				
@@ -219,7 +223,11 @@ package com.dehats.sqla.model.presentation
 			
 			var done:Boolean = mainModel.compact();
 			
-			if( done) Alert.show("Database compacting done !", "Info");
+			if( done)
+			{
+				Alert.show("Database compacting done !", "Info");
+				dispatchEvent(new Event(FILE_CHANGED));
+			} 
 			
 			else Alert.show("Unable to compact database", "Error");
 		}

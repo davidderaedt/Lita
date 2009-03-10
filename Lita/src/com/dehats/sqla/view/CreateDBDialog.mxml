@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="438" height="196" title="Create New DB"
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="438" height="234" title="Create New DB"
 	showCloseButton="true"
 	close=" PopUpManager.removePopUp(this)">
 
 	<mx:Script>
 		<![CDATA[
+			import com.dehats.air.sqlite.SimpleEncryptionKeyGenerator;
+			import mx.controls.Alert;
 			import com.dehats.sqla.model.presentation.MainPM;
 			import mx.managers.PopUpManager;
 
@@ -15,6 +17,7 @@
 			private var filePath:String;
 
 			private var pwd:String;
+
 			
 			private function browse():void
 			{
@@ -31,9 +34,19 @@
 			
 			private function submit():void
 			{
-				pm.createDBFile( new File(filePath), pwd);
-				PopUpManager.removePopUp(this);
+				var testGen:SimpleEncryptionKeyGenerator = new SimpleEncryptionKeyGenerator();
+				
+				if(testGen.validateStrongPassword(pwd))
+				{
+					pm.createDBFile( new File(filePath), pwd);
+					PopUpManager.removePopUp(this);					
+				}
+				else
+				{
+					Alert.show( SimpleEncryptionKeyGenerator.PASSWORD_WARNING, "Incorrect password form");
+				}
 			}
+
 			
 		]]>
 	</mx:Script>
@@ -52,7 +65,10 @@
 		displayAsPassword="true"
 		y="51"
 		change=" pwd = pwdTi.text" left="133" right="10"/>
-	<mx:Label x="10" y="79" text="*Encryption will be done using the SimpleEncryptionKeyGenerator class"/>
+
+	<mx:Text left="10" y="79" right="10"
+		text="*Encryption will be done using the SimpleEncryptionKeyGenerator class. { SimpleEncryptionKeyGenerator.PASSWORD_WARNING}" 
+		height="69"/>
 	
 	<mx:ControlBar horizontalAlign="center">
 		<mx:Button label="Create"  
