@@ -28,7 +28,7 @@
 			import com.dehats.sqla.model.MainModel; 
 
 			[Bindable]
-			private var mainPM:MainPM = new MainPM(); 
+			private var mainPM:MainPM = new MainPM();
 			
 			
 			private function onCreationComplete():void
