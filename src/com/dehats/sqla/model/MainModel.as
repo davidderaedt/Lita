@@ -191,9 +191,9 @@ package com.dehats.sqla.model
 			for ( var i:int = 0 ; i < dbTables.length ; i++)
 			{
 				var table:SQLTableSchema = dbTables[i];
-				str+= table.sql + ";\n\n";
+				str+= table.sql + ";" +File.lineEnding+File.lineEnding;
 				
-				if(pData) str+= db.exportTableRecords( table)+"\n\n";
+				if(pData) str+= db.exportTableRecords( table)+File.lineEnding+File.lineEnding;
 				
 			}
 			
