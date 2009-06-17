@@ -44,7 +44,7 @@
 			<!--		<mx:TextInput id="dataTypeTi" text="INTEGER"/>	-->
 			<components:AutoComplete id="dataTypeTi"
 								creationComplete="dataTypeTi.text='INTEGER'"			
-								dataProvider="{ SQLType.TYPES}"								
+								dataProvider="{ SQLType.AFFINITY_TYPES}"								
 								text="INTEGER"/>
 		</mx:FormItem>
 		<mx:FormItem>

@@ -70,7 +70,7 @@ package com.dehats.sqla.model
 			
 			loadSchema();
 			
-			if(dbTables.length>0) selectTable(dbTables[0] );
+			if( dbTables && dbTables.length>0) selectTable(dbTables[0] );
 
 		}
 		
@@ -138,10 +138,13 @@ package com.dehats.sqla.model
 		private function loadSchema():void
 		{
 			schemas =  db.getSchemas();
-			schemas.tables.sortOn("name", Array.CASEINSENSITIVE);
+			if(schemas==null) return;
 			dbTables = schemas.tables;
-			schemas.indices.sort(sortIndices);
 			dbIndices = schemas.indices;
+			schemas.views
+			
+			if(dbTables) dbTables.sortOn("name", Array.CASEINSENSITIVE);
+			if(dbIndices) dbIndices.sort(sortIndices);
 		}
 		
 		private function sortIndices(a:SQLIndexSchema, b:SQLIndexSchema):Number

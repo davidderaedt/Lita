@@ -3,6 +3,7 @@ package com.dehats.sqla.model
 	import com.dehats.air.DeclarativeMenu;
 	import com.dehats.sqla.model.presentation.MainPM;
 	
+	import flash.desktop.NativeApplication;
 	import flash.display.NativeMenuItem;
 	import flash.events.Event;
 	
@@ -10,10 +11,12 @@ package com.dehats.sqla.model
 	{
 		
 		private var pm:MainPM;
+		private var nativeApp:NativeApplication;
 		
-		public function NativeMenuManager(pPM:MainPM)
+		public function NativeMenuManager(pPM:MainPM, pNativeApp:NativeApplication)
 		{
 			pm = pPM;
+			nativeApp = pNativeApp;
 		}
 
 		
@@ -37,6 +40,13 @@ package com.dehats.sqla.model
 			            <CompactCommand label='Compact Database'/>
 			            <EncryptCommand label='Encrypt / Reencrypt Database'/>
 			        </DBMenu>
+		
+			        <EditMenu label='Edit'>
+			            <CopyCommand label='Copy' equiv='c'/>
+			            <PasteCommand label='Paste' equiv='v'/>		            
+			            <CutCommand label='Cut' equiv='x'/>		            
+			            <SelectAllCommand label='Select All' equiv='a'/>		            			            
+			        </EditMenu>
 			        
 			    </root>;
 
@@ -55,31 +65,47 @@ package com.dehats.sqla.model
 			switch (item.name)
 			{
 				case "QuitCommand":
-				pm.closeApp();
+					pm.closeApp();
 				break;
 
 				case "AboutCommand":
-				pm.promptAboutDialog();
+					pm.promptAboutDialog();
 				break;
 								
 				case "OpenCommand":
-				pm.promptOpenFile();
+					pm.promptOpenFile();
 				break;
 
 				case "CreateCommand":
-				pm.promptCreateDBFile();
+					pm.promptCreateDBFile();
 				break;
 
 				case "CompactCommand":
-				pm.compact();
+					pm.compact();
 				break;
 
 				case "EncryptCommand":
-				pm.promptReencrypt();
+					pm.promptReencrypt();
 				break;
 				
 				case "ExportStructCommand":
-				pm.exportDB();
+					pm.exportDB();
+				break;
+				
+				case "CopyCommand":
+					nativeApp.copy();
+				break;
+
+				case "PasteCommand":
+					nativeApp.paste();
+				break;
+
+				case "CutCommand":
+					nativeApp.cut();
+				break;
+
+				case "SelectAllCommand":
+					nativeApp.selectAll();
 				break;
 
 				default:break;

@@ -5,6 +5,7 @@
 
 	<mx:Script>
 		<![CDATA[
+			import com.dehats.flex.component.DateTimeEditor;
 			import mx.binding.utils.BindingUtils;
 			import mx.controls.Alert;
 			import mx.events.CloseEvent;
@@ -39,12 +40,17 @@
 			{
 				pm.mainModel.addEventListener(MainModel.TABLE_SELECTED, onTableSelected);		
 				
-				BindingUtils.bindSetter(fillForm, pm, ["mainModel", "selectedRecord"]);		
+				BindingUtils.bindSetter(fillForm, pm, ["mainModel", "selectedRecord"]);	
 			}	
 			
 			private function onTableSelected(pEvt:Event):void
 			{
-				selectedTable = pm.mainModel.selectedTable;			
+				selectedTable = pm.mainModel.selectedTable;		
+				prepareViewsForTable();	
+			}
+			
+			private function prepareViewsForTable():void
+			{
 				
 				// clear forms
 				clearForms();
@@ -84,23 +90,21 @@
 					colToComponent[col.name] = comp;
 					colToComponent2[col.name] = comp2;
 					
-					// add datadg columns
+					// add datadgrid columns
 					var dgc:DataGridColumn = new DataGridColumn(col.name);
 					coltab.push(dgc);
 	
 				}
 				// reset dg columns
-				dataDG.columns =coltab.reverse() ;
+				dataDG.columns = coltab.reverse() ;
 			}			
 			
 			private function clearForms():void
 			{
-
-				for ( var z:String in colToComponent) dynForm.removeChild(colToComponent[z].parent);
-				
+				for ( var z:String in colToComponent) dynForm.removeChild(colToComponent[z].parent);				
 				for ( var z2:String in colToComponent2) dynForm2.removeChild(colToComponent2[z2].parent);
-
 			}
+			
 
 			private function selectRecord(pData:Object):void
 			{
@@ -128,7 +132,7 @@
 							break;
 
 						case SQLType.DATE:
-							var df:DateField = colToComponent[col.name] as DateField;
+							var df:DateTimeEditor = colToComponent[col.name] as DateTimeEditor;
 							if( pData==null)  df.selectedDate = null ;
 							else df.selectedDate = pData[col.name];						
 							break;
@@ -163,7 +167,7 @@
 				}			
 			}	
 			
-			private function getItemFrom(pCol2Comp:Object):Object
+			private function makeItemFrom(pCol2Comp:Object):Object
 			{
 				var vo:Object = {};
 				
@@ -184,8 +188,8 @@
 							break;
 	
 							case SQLType.DATE:
-							var df:DateField = pCol2Comp[col.name] as DateField;
-							vo[ col.name ] = DateField.dateToString( df.selectedDate, "YYYY-MM-DD" ) ;
+							var df:DateTimeEditor = pCol2Comp[col.name] as DateTimeEditor;
+							vo[ col.name ] = df.selectedDate;//DateField.dateToString( df.selectedDate, "YYYY-MM-DD" ) ;
 							break;
 	
 							case SQLType.TEXT:
@@ -240,19 +244,19 @@
 						break;
 					
 					case SQLType.DATE:
-						return new DateField();
+						return new DateTimeEditor();
 						break;
 					
 					case SQLType.INTEGER:
 						var ti:TextInput = new TextInput();
-						ti.restrict="0123456789";
+						ti.restrict="-0123456789";
 						return ti;
 						break;
 						
 					case SQLType.REAL:
 					case SQLType.NUMERIC:					
 						var ti2:TextInput = new TextInput();
-						ti2.restrict = "0.123456789";
+						ti2.restrict = "-0.123456789";
 						return ti2; 
 						break;
 
@@ -277,6 +281,14 @@
 				
 				return null;
 			}	
+			
+			private function createRecord(pClear:Boolean):void
+			{
+				pm.createRecord( makeItemFrom( colToComponent2 ));
+				
+				if(pClear) prepareViewsForTable();
+				
+			}
 			
 			private function deleteRecord():void
 			{
@@ -309,6 +321,7 @@
 	<mx:VDividedBox left="10" top="40" bottom="10" right="10">
 	
 		<mx:DataGrid id="dataDG" width="100%" height="50%"
+			horizontalScrollPolicy="auto"
 			selectedItem="{ pm.mainModel.selectedRecord}"
 			change=" selectRecord (dataDG.selectedItem)"
 			dataProvider="{pm.mainModel.tableRecords}">
@@ -326,7 +339,7 @@
 					<mx:Button label="Save Record" 
 						icon="{ AssetManager.ICON_SAVE}"
 						enabled="{ pm.mainModel.selectedRecord != null}"
-						click=" pm.updateRecord( getItemFrom( colToComponent) )" y="10" x="10"/>
+						click=" pm.updateRecord( makeItemFrom( colToComponent) )" y="10" x="10"/>
 				</mx:FormItem>
 				
 				<mx:FormItem>
@@ -339,16 +352,17 @@
 			</mx:Form>
 			
 			
-			
 			<mx:Form id="dynForm2" 
 				height="100%"  width="50%">
 	
 				<mx:FormHeading label="New Record" />
 								
-				<mx:FormItem>			
+				<mx:FormItem direction="horizontal">			
 					<mx:Button label="Add Record" 
 						icon="{ AssetManager.ICON_ADD}"
-						click=" pm.createRecord( getItemFrom( colToComponent2 ))" x="10" y="40"/>					
+						click=" createRecord(clearFormCB.selected);" x="10" y="40"/>					
+					<mx:CheckBox id="clearFormCB" 
+						label="Clear form"/>
 				</mx:FormItem>
 				
 			</mx:Form>

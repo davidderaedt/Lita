@@ -37,7 +37,7 @@ package com.dehats.sqla.model.presentation
 		private var mainView:IMainView;
 
 
-		public function MainPM()
+		public function MainPM(pNativeApp:NativeApplication)
 		{
 			
 			fileManager = new FileManager();
@@ -48,7 +48,7 @@ package com.dehats.sqla.model.presentation
 			sqlStatementPM = new SQLStatementPM( mainModel, fileManager);
 			sqlStructureViewPM = new SQLStructureViewPM( mainModel, fileManager);
 			
-			nativeMenuMgr = new NativeMenuManager(this);
+			nativeMenuMgr = new NativeMenuManager(this, pNativeApp);
 				
 		}
 		

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml">
+
+	<mx:Script>
+		<![CDATA[
+			
+			[Bindable]
+			public var selectedDate:Date;						
+			
+		]]>
+	</mx:Script>
+
+	<mx:DateField x="0" y="1" id="df" selectedDate="{selectedDate}"
+		change=" selectedDate = df.selectedDate"/>
+	<mx:NumericStepper x="89" y="1" minimum="0" maximum="23" width="42" value="{ selectedDate.hours}" id="hoursNs"
+		change=" selectedDate.hours= hoursNs.value"/>
+	<mx:Label x="131" y="3" text="Hr"/>
+	<mx:NumericStepper x="148" y="1" maximum="59" width="42" value="{ selectedDate.minutes}" id="minsNs"
+		change=" selectedDate.minutes = minsNs.value"/>
+	<mx:Label x="190" y="3" text="mn"/>
+	<mx:NumericStepper x="213" y="1" maximum="59" width="42" value="{ selectedDate.seconds}" id="secsNs"
+		change=" selectedDate.seconds = secsNs.value"/>
+	
+	
+	
+</mx:Canvas>
