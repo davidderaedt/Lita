@@ -9,6 +9,15 @@
 
 			[Bindable]
 			public var pm:SQLStatementPM;
+			
+			
+			private function onKeyUp(pEvt:KeyboardEvent):void
+			{
+				if(pEvt.keyCode==Keyboard.ENTER && pEvt.controlKey)
+				{
+					pm.executeStatement(statementTa.text);
+				}
+			}
 						
 		]]>
 	</mx:Script>
@@ -16,6 +25,7 @@
 	<mx:Label x="10" y="10" text="Statement"/>			
 	
 	<mx:TextArea id="statementTa"
+		keyUp=" onKeyUp(event)"
 		text="{ pm.statement}"
 		styleName="statement" 
 		y="36" height="135" left="10" right="168"/>
@@ -28,20 +38,22 @@
 		dataProvider="{ pm.persoStatementHist}"
 		y="36" height="135" right="10" width="150"></mx:List>
 	
-	<mx:Button y="179" label="Execute"
+	<mx:Button y="179" label="Execute (Ctrl+Enter)"
 		icon="{ AssetManager.ICON_GEAR_DB}"
-		click=" pm.executeStatement(statementTa.text)" horizontalCenter="-65"/>
+		click=" pm.executeStatement(statementTa.text)" x="10"/>
 		
 	<mx:DataGrid 
+		horizontalScrollPolicy="auto"
 		dataProvider="{ pm.results}"
 		top="209" bottom="10" right="10" left="10">
 	</mx:DataGrid>
-	
+	 
 	<mx:Button x="71" y="8" label="Import From SQL File"
 		click=" pm.importSQLFile()"/>
 	
 	<mx:Button y="8" label="Save in SQL File"
 		click=" pm.exportToFile( escape(statementTa.text))" x="221"/>
+	<mx:Label x="175" y="181" text="{pm.results.length+' record(s)'}"/>
 	
 
 </mx:Canvas>
