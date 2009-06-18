@@ -21,23 +21,16 @@ package com.dehats.sqla.model
 		public static const TABLE_SELECTED:String = "tableSelected";
 		
 		public var db:SQLiteDBHelper = new SQLiteDBHelper();
-
 		public var dbFile:File ;
-
-		public var docTitle:String;
-		
+		public var docTitle:String;		
 		public var dbTables:Array ;
-		
 		public var dbIndices:Array;
-
+		public var dbViews:Array;		
 		public var selectedTable:SQLTableSchema;
-
-		public var tableRecords:Array;
-		
+		public var tableRecords:Array;		
 		public var selectedColumn:SQLColumnSchema;
-
 		public var selectedRecord:Object;
-		
+				
 		private var schemas:SQLSchemaResult;
 						
 		public function MainModel()
@@ -141,7 +134,7 @@ package com.dehats.sqla.model
 			if(schemas==null) return;
 			dbTables = schemas.tables;
 			dbIndices = schemas.indices;
-			schemas.views
+			dbViews = schemas.views;
 			
 			if(dbTables) dbTables.sortOn("name", Array.CASEINSENSITIVE);
 			if(dbIndices) dbIndices.sort(sortIndices);
@@ -207,6 +200,12 @@ package com.dehats.sqla.model
 		
 		public function selectTable(pTable:SQLTableSchema):void
 		{
+			if(pTable==null)
+			{
+				Alert.show("Cannot select null table", "Error");
+				return;
+			} 
+			
 			selectedTable = pTable ;
 			selectedColumn = null ;
 			selectedRecord = null ;
@@ -217,13 +216,16 @@ package com.dehats.sqla.model
 		public function createTable(pTableName:String, pDefaultCol:String):void
 		{
 			db.createTable(pTableName, [ pDefaultCol]);
+			
 			loadSchema();
-			selectTable(getTableByName( pTableName));
+			var table:SQLTableSchema = getTableByName( pTableName);
+			if(table) selectTable(table);
 		}
 		
 		public function copyTable(pNewName:String, pCopyData:Boolean=true):void
 		{
 			db.copyTable( selectedTable, pNewName, pCopyData);
+			
 			loadSchema();
 			selectTable( getTableByName( pNewName));
 		}
@@ -341,7 +343,7 @@ package com.dehats.sqla.model
 		
 		public function refreshRecords():void
 		{
-			tableRecords = db.getTableRecords(selectedTable);
+			if(selectedTable!=null)	tableRecords = db.getTableRecords(selectedTable);
 			selectedRecord=null;
 		}
 		

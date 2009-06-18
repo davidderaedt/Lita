@@ -138,6 +138,8 @@
 					
 		</mx:ApplicationControlBar>
 
+		<mx:Label color="#FFFFFF" text="{'Last statement executed in '+mainPM.mainModel.db.lastExecutionTime+' ms'}" y="10" right="10" />
+
 		<view:TableListView
 			mainPM="{ mainPM.tableListPM}" left="10" top="10" bottom="10" width="189"/>		
 		
