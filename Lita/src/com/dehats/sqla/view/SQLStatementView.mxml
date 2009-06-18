@@ -54,6 +54,7 @@
 	<mx:Button y="8" label="Save in SQL File"
 		click=" pm.exportToFile( escape(statementTa.text))" x="221"/>
 	<mx:Label x="175" y="181" text="{pm.results.length+' record(s)'}"/>
+	<mx:Label x="273" y="181" text="{pm.results.length+' record(s)'}"/>
 	
 
 </mx:Canvas>

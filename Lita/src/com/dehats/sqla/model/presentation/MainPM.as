@@ -26,9 +26,9 @@ package com.dehats.sqla.model.presentation
 		public var sqldataViewPM:SQLDataViewPM ;
 		public var sqlStructureViewPM:SQLStructureViewPM ;
 		public var indicesPM:IndicesPM;
+		public var mainModel:MainModel = new MainModel();
 		
 		private var updater:ApplicationUpdaterUI = new ApplicationUpdaterUI();
-		private var mainModel:MainModel = new MainModel();
 		private var fileManager:FileManager; 
 		private var nativeMenuMgr:NativeMenuManager;		
 		private var firstInvocation:Boolean=true ;
