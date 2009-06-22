@@ -181,7 +181,11 @@ package com.dehats.sqla.model.presentation
 				// No file has ever been opened : this is the first time this app is executed
 				// else, open the "Open file dialog"
 				if( fileManager.recentlyOpened.length == 0 )  firstTimeGreetings();					
-				else  promptOpenFile();
+				else
+				{
+					promptOpenFile();
+					mainView.promptCommercialDialog();
+				}  
 			}
 
 		}

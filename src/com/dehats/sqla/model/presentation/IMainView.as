@@ -6,5 +6,6 @@ package com.dehats.sqla.model.presentation
 		function promptOpenFileDialog(pClosable:Boolean=false):void;
 		function promptAboutDialog():void;
 		function promptReencryptDialog():void;
+		function promptCommercialDialog():void;
 	}
 }
