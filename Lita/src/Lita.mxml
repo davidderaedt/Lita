@@ -12,6 +12,7 @@
 
 	<mx:Script>
 		<![CDATA[
+			import com.dehats.sqla.view.CommercialDialog;
 			import com.dehats.sqla.view.CopyTableDialog;
 			import com.dehats.sqla.view.ReencryptionDialog;
 			import com.dehats.sqla.model.presentation.IMainView;
@@ -40,8 +41,7 @@
 								
 				mainPM.initialize( this);
 				
-				center();
-				
+				center();				
 			}	
 
 			// workaround to fix the quit bug on OSX with the update framework			
@@ -98,6 +98,12 @@
 				win.version = nativeApplication.applicationDescriptor.ns::version;
 				win.pm = mainPM;
 			}			
+			
+			public function promptCommercialDialog():void
+			{
+				var dialog:CommercialDialog = PopUpManager.createPopUp(this, CommercialDialog, true) as CommercialDialog;
+				PopUpManager.centerPopUp(dialog);
+			}
 			
 		]]>
 	</mx:Script>
