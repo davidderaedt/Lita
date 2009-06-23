@@ -28,7 +28,7 @@
 			private function addField():void
 			{				
 				//typeCMB.selectedItem.toString()
-				if(typeACTI.text=="") typeACTI.text="NUMERIC";
+				if(typeACTI.text=="") typeACTI.text="TEXT";
 				pm.mainModel.addColumn(colNameTi.text, typeACTI.text, nullCB.selected, uniqueCb.selected, defaultTi.text);
 				colNameTi.text="";
 			}
@@ -139,7 +139,7 @@
 				<mx:TextInput id="colNameTi"/>
 			</mx:FormItem>
 			<mx:FormItem label="Field Type">
-				<components:AutoComplete id="typeACTI" typedText="INTEGER"
+				<components:AutoComplete id="typeACTI" typedText="TEXT"
 					dataProvider="{SQLType.AFFINITY_TYPES}"/>
 				<mx:Label text="(use up/down arrows for suggestions)"/>
 			</mx:FormItem>

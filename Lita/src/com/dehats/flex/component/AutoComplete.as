@@ -108,6 +108,7 @@ public class AutoComplete extends ComboBox
 		setStyle("paddingLeft",0);
 		setStyle("paddingRight",0);
 		rowCount = 7;
+		
 	}
 
 	//--------------------------------------------------------------------------
@@ -406,7 +407,7 @@ public class AutoComplete extends ComboBox
 	override protected function commitProperties():void
 	{
 	    super.commitProperties();
-		
+
   	    if(!dropdown)
 			selectedIndex=-1;
   			
@@ -507,8 +508,8 @@ public class AutoComplete extends ComboBox
 	
 	override public function set data(value:Object):void
 	{
-		typedText =  value['type'];
-		super.data = value;		
+		typedText =  value['type'];		
+		super.data = value;				
 	}
 	
 	/**
@@ -600,7 +601,8 @@ public class AutoComplete extends ComboBox
 	//  Methods
 	//
 	//--------------------------------------------------------------------------
-				
+	
+			
 	/**
 	 *  @private
 	 *  If keepLocalHistory is enabled, stores the text typed 
