@@ -12,7 +12,7 @@
 
 	<mx:Script>
 		<![CDATA[
-			import com.dehats.sqla.view.CommercialDialog;
+			import com.dehats.sqla.view.WelcomeDialog;
 			import com.dehats.sqla.view.CopyTableDialog;
 			import com.dehats.sqla.view.ReencryptionDialog;
 			import com.dehats.sqla.model.presentation.IMainView;
@@ -65,8 +65,8 @@
 			public function promptOpenFileDialog(pClosable:Boolean=false):void
 			{				
 				var win:OpenFileDialog = PopUpManager.createPopUp(this, OpenFileDialog, true) as OpenFileDialog;
+				win.pm = mainPM;				
 				PopUpManager.centerPopUp(win);
-				win.pm = mainPM;
 				win.closable = pClosable;
 			}	
 			
@@ -101,7 +101,8 @@
 			
 			public function promptCommercialDialog():void
 			{
-				var dialog:CommercialDialog = PopUpManager.createPopUp(this, CommercialDialog, true) as CommercialDialog;
+				var dialog:WelcomeDialog = PopUpManager.createPopUp(this, WelcomeDialog, true) as WelcomeDialog;
+				dialog.pm = mainPM;
 				PopUpManager.centerPopUp(dialog);
 			}
 			
@@ -147,9 +148,12 @@
 		<mx:Label color="#FFFFFF" text="{'Last statement executed in '+mainPM.mainModel.db.lastExecutionTime+' ms'}" y="10" right="10" />
 
 		<view:TableListView
-			mainPM="{ mainPM.tableListPM}" left="10" top="10" bottom="10" width="189"/>		
+			enabled="{ mainPM.mainModel.dbFile!=null}"
+			mainPM="{ mainPM.tableListPM}" 
+			left="10" top="10" bottom="10" width="189"/>		
 		
 		<mx:TabNavigator left="207" bottom="10" top="10" right="10" creationPolicy="all"
+			enabled="{ mainPM.mainModel.dbFile!=null}"
 			selectedTabTextStyleName="SelectedTabText">
 
 			<view:SQLStructureView id="structureTab" label="Structure" width="100%" height="100%" 

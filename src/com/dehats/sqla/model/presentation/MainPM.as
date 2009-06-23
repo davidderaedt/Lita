@@ -12,6 +12,8 @@ package com.dehats.sqla.model.presentation
 	import flash.events.Event;
 	import flash.events.InvokeEvent;
 	import flash.filesystem.File;
+	import flash.net.URLRequest;
+	import flash.net.navigateToURL;
 	
 	import mx.controls.Alert;
 	
@@ -184,7 +186,6 @@ package com.dehats.sqla.model.presentation
 				else
 				{
 					promptOpenFile();
-					mainView.promptCommercialDialog();
 				}  
 			}
 
@@ -192,7 +193,7 @@ package com.dehats.sqla.model.presentation
 			
 		private function firstTimeGreetings():void
 		{
-			Alert.show("Please choose Open and then browse for a database file.", "Welcome");
+			mainView.promptCommercialDialog();
 		}
 
 		public function closeApp():void

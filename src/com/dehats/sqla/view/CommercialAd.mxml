@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml"  height="52" width="416"
+	buttonMode="true"
+	useHandCursor="true"
+	click=" goToLupoWebpage();">
+
+	<mx:Script>
+		<![CDATA[
+
+			public function goToLupoWebpage():void
+			{
+				navigateToURL(new URLRequest("http://www.dehats.com/drupal/?q=node/81"));
+			}
+			
+		]]>
+	</mx:Script>
+
+	<mx:Image width="48" height="48" left="0" 
+		source="@Embed('assets/icons/lupoIcon.png')" y="0"/>
+
+	<mx:Text htmlText="&lt;a href='http://www.dehats.com/drupal/?q=node/81' &gt;Looking for a way to localize your Flex apps?&lt;br&gt;Check out &lt;b&gt;Lupo Manager&lt;/b&gt;, the easiest and most productive way to localize Adobe Flex applications.&lt;/a&gt;"
+		selectable="false"
+		buttonMode="true"
+		useHandCursor="true"
+		left="56" right="0" height="48" y="0"/>
+	
+
+</mx:Canvas>
