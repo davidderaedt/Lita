@@ -12,8 +12,6 @@ package com.dehats.sqla.model.presentation
 	import flash.events.Event;
 	import flash.events.InvokeEvent;
 	import flash.filesystem.File;
-	import flash.net.URLRequest;
-	import flash.net.navigateToURL;
 	
 	import mx.controls.Alert;
 	
@@ -79,6 +77,11 @@ package com.dehats.sqla.model.presentation
 		
 		
 		// DB File
+		
+		public function openSample():void
+		{
+			openDBFile(fileManager.sample);
+		}
 		
 		public function openDBFile(pFile:File, pHash:String=""):void
 		{
