@@ -24,6 +24,8 @@ package com.dehats.sqla.model
 		// holds a reference to the imported SQL
 		public var importedSQL:String;
 		
+		public var sample:File;
+		
 		public function FileManager()
 		{
 						
@@ -38,8 +40,8 @@ package com.dehats.sqla.model
 				return ;
 			} 
 			
-			var sample:File = File.applicationStorageDirectory.resolvePath(sampleName);
-			original.copyTo(sample, true);
+			sample = File.applicationStorageDirectory.resolvePath(sampleName);
+			if(! sample.exists ) original.copyTo(sample, true);
 
 			// Copy the SimpleEncryption class the applicationStorageDirectory
 			
@@ -55,11 +57,13 @@ package com.dehats.sqla.model
 			if(! dest.exists) comDir.copyTo( dest, true);
 			
 			getRecentlyOpened();
-			
+
+/*			
 			if( recentlyOpened.length==0) 
 			{
 				addRecentlyOpened( sample);
 			}
+*/			
 		}
 
 

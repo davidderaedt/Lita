@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="480" height="166" title="Welcome to Lita !"
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="460" height="222" title="Welcome to Lita !"
 	showCloseButton="true"
 	close=" closeMe()" xmlns:ns1="com.dehats.sqla.view.*">
 	
@@ -18,16 +18,20 @@
 		]]>
 	</mx:Script>
 
-	<mx:Text y="10" text="Thanks for installing Lita, the SQLite database administration software." 
-		left="10" right="10" fontSize="13" height="46"/>
+	<mx:Text y="10" text="Thanks for installing Lita, the SQLite database administration software. You can get to work by opening or creating a database:&#xd;" 
+		left="10" right="10" fontSize="13" height="40"/>
 
-	<mx:Button y="64" label="Open a Database" 
+	<mx:Button y="58" label="Open a Database" 
 		click=" pm.promptOpenFile(); closeMe();" 
-		width="180" horizontalCenter="-93"/>
+		width="180" horizontalCenter="-94"/>
 		
-	<mx:Button y="64" label="Create a New Database"
+	<mx:Button y="58" label="Create a New Database"
 		click=" pm.promptCreateDBFile(); closeMe();" 
-		width="180" horizontalCenter="95"/>
+		width="180" horizontalCenter="94"/>
+		
+	<mx:Button x="224" y="109" label="Open a sample Database" width="180"
+		click=" pm.openSample(); closeMe()"/>
+	<mx:Label x="10" y="111" text="...or open our sample database file" fontSize="13"/>
 
 
 </mx:TitleWindow>

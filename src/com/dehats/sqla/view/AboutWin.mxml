@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="400" height="298" 
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="400" height="234" 
 	showCloseButton="true"
 	close=" PopUpManager.removePopUp(this)"
-	title="About"
+	title="About Lita"
 	borderAlpha="1">
 	<mx:Script>
 		<![CDATA[
@@ -24,18 +24,18 @@
 	<mx:Label x="10" y="10" text="Version"/>
 	<mx:Label x="64" y="10" text="{ version}"/>
 
-	<mx:Label x="10" y="36" text="Created by David Deraedt"/>
-	<mx:LinkButton x="10" y="62" label="http://www.dehats.com/"
+	<mx:Label x="10" y="64" text="Created by David Deraedt"/>
+	<mx:LinkButton x="147" y="62" label="http://www.dehats.com/"
 		click=" navigateToURL( new URLRequest('http://www.dehats.com'))"/>
 
 	<mx:Label x="10" y="92" text="With the help of Paul Robertson"/>
-	<mx:LinkButton x="17" y="118" label="http://probertson.com/"
+	<mx:LinkButton x="174" y="90" label="http://probertson.com/"
 		click=" navigateToURL( new URLRequest('http://probertson.com/'))"/>
 		
-	<mx:Label x="10" y="148" text="Icons by famfamfam"/>
-	<mx:LinkButton x="10" y="174" label="http://www.famfamfam.com/"
+	<mx:Label x="10" y="120" text="Icons by famfamfam"/>
+	<mx:LinkButton x="132" y="118" label="http://www.famfamfam.com/"
 		click=" navigateToURL( new URLRequest('http://www.famfamfam.com/'))"/>
-	<mx:Button x="132" y="8" label="Check for updates"
+	<mx:Button x="132" y="8" label="Check for updates now"
 		click=" pm.checkForUpdates();"/>
 		
 	<mx:ControlBar horizontalAlign="center">
