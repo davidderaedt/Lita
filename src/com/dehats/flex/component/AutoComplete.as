@@ -428,7 +428,7 @@ public class AutoComplete extends ComboBox
 				else
 				{
 					showDropdown = true;
-					selectedIndex = 0;
+					//selectedIndex = 0;
  		    	}
  		    }
 		}
@@ -487,6 +487,7 @@ public class AutoComplete extends ComboBox
 			{
 				if(dataProvider.length>0)
 				{
+					if( selectedItem==null) return;
 					textInput.text = selectedItem.toString();
 					textInput.setSelection(textInput.text.length, textInput.text.length);
 					dispatchEvent(new ListEvent(ListEvent.CHANGE));					

@@ -12,12 +12,16 @@ package com.dehats.sqla.model.presentation
 	import flash.events.Event;
 	import flash.events.InvokeEvent;
 	import flash.filesystem.File;
+	import flash.net.URLRequest;
+	import flash.net.navigateToURL;
 	
 	import mx.controls.Alert;
 	
 	[Bindable]
 	public class MainPM extends AbstractPM
 	{
+
+		public static const HELP_URL:String="http://www.dehats.com/drupal/?q=node/90";	
 		
 		public static const FILE_CHANGED:String="fileHasChanged";	
 		
@@ -265,6 +269,11 @@ package com.dehats.sqla.model.presentation
 			mainModel.reencrypt( pPwd);
 			
 			Alert.show("Done !", "Information");
+		}
+		
+		public function goToHelp():void
+		{
+			navigateToURL(new URLRequest(HELP_URL));
 		}
 
 	}

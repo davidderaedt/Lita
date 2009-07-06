@@ -332,7 +332,12 @@ package com.dehats.sqla.model
 		{
 			db.createRecord(selectedTable, pVo);
 			refreshRecords();
-			selectRecord( tableRecords[tableRecords.length-1] );
+			
+			if(tableRecords && tableRecords.length>0)
+			{
+				selectRecord( tableRecords[tableRecords.length-1] );
+			}
+			
 		}
 		
 		public function deleteRecord():void
