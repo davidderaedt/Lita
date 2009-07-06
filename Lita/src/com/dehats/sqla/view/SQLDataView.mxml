@@ -113,6 +113,8 @@
 			
 			private function fillForm(pData:Object):void
 			{
+				
+				if(pData)trace(pData.birth_date)
 				//var pData:Object = pm.mainModel.selectedRecord;
 				// fill form
 				if(selectedTable==null) return;
@@ -175,8 +177,8 @@
 				{
 					var col:SQLColumnSchema = selectedTable.columns[i] as SQLColumnSchema;
 					
-					if( ! col.primaryKey)
-					{
+//					if( ! col.primaryKey)
+//					{
 						
 						var affinity:String = SQLType.getAffinity(col.dataType) ;
 
@@ -225,7 +227,7 @@
 							break;
 							
 						}			
-					}
+//					}
 										
 				}	
 				

@@ -26,6 +26,7 @@ package com.dehats.sqla.model
 			var menuDefinition:XML = 
 			    <root> 
 			        <AppMenu label='Lita'>
+			            <HelpCommand label='Online Help'/>			        			        
 			            <AboutCommand label='About Lita'/>			        
 			            <QuitCommand label='Quit Lita' equiv='q'/>
 			        </AppMenu>
@@ -64,6 +65,13 @@ package com.dehats.sqla.model
 			
 			switch (item.name)
 			{
+				
+
+				case "HelpCommand":
+					pm.goToHelp();
+				break;
+
+				
 				case "QuitCommand":
 					pm.closeApp();
 				break;
