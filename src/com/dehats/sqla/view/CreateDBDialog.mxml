@@ -65,7 +65,7 @@
 	<mx:Button y="15" label="Browse" 
 		click=" browse()" right="10"/>
 		
-	<mx:Label x="10" y="53" text="Password (Optionnal)*"/>
+	<mx:Label x="10" y="53" text="Password (Optional)*"/>
 	<mx:TextInput id="pwdTi" 
 		enter=" submit()"
 		displayAsPassword="true"

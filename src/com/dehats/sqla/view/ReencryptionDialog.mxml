@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="414" height="158" title="(Re)encrypt Your Database"
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="502" height="158" title="(Re)encrypt Your Database"
 	showCloseButton="true"
 	close=" PopUpManager.removePopUp(this)">
 
@@ -24,13 +24,13 @@
 	</mx:Script>
 
 	<mx:Label x="10" y="10" text="Password"/>
-	<mx:Label x="10" text="*Encryption will be done using the SimpleEncryptionKeyGenerator class" bottom="10"/>
+	<mx:Label x="10" text="* The encryption key will be created using the SimpleEncryptionKeyGenerator class" bottom="10"/>
 	
 	<mx:TextInput y="8" id="pwdTi" displayAsPassword="true"
 		enter=" submit(pwdTi.text)" left="73" right="20"/>
 	
 	<mx:ControlBar horizontalAlign="center">
-		<mx:Button label="Button" styleName="WhiteButton"
+		<mx:Button label="(Re)Encrypt" styleName="WhiteButton"
 			click=" submit(pwdTi.text)"
 			enabled="{ pwdTi.text.length>0}"/>
 	</mx:ControlBar>
