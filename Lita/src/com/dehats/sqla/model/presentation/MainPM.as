@@ -119,7 +119,7 @@ package com.dehats.sqla.model.presentation
 		[Bindable("fileHasChanged")]
 		public function get fileInfos():String
 		{
-			if(mainModel.dbFile==null || mainModel.dbFile.exists==false) return "No infos available"
+			if(mainModel.dbFile==null || mainModel.dbFile.exists==false) return "No info available"
 			return mainModel.dbFile.nativePath;
 		}
 				
@@ -181,7 +181,7 @@ package com.dehats.sqla.model.presentation
 			{					
 				var f:File = new File(parameters[0]);										
 				if( f.exists ) openDBFile(f);
-				else Alert.show("Invokation argument is not an existing file", "Error");
+				else Alert.show("Invocation argument is not an existing file", "Error");
 			}
 
 			// 2. The App was launched by clicking on it							

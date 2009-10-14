@@ -79,9 +79,9 @@
 		change=" selectedFile = new File( fileListCmb.selectedItem.path)"
 		labelField="name"
 		dataProvider="{ pm.recentlyOpenedFiles }"
-		left="61" right="58"></mx:ComboBox>
+		left="85" right="58"></mx:ComboBox>
 
-	<mx:TextInput id="pathTi" left="61"
+	<mx:TextInput id="pathTi" left="85"
 		visible="false"
 		text="{ selectedFilePath}" y="12" right="58"/>
 
@@ -91,7 +91,7 @@
 		label="..." y="12" right="10"/>
 		
 	
-	<mx:Label x="10" text="DB File" y="14"/>
+	<mx:Label x="38" text="DB File" y="14"/>
 
 
 <!--
@@ -103,16 +103,16 @@
 		
 -->	
 
-	<mx:Label x="13" text="Hash*" y="44"/>
+	<mx:Label id="keyLbl" text="Base-64 Key*" y="44" textAlign="right" x="7"/>
 	
 	<mx:TextInput id="hashTi" displayAsPassword="true"
 		enter=" openFile(hashTi.text)" 
-		width="188" y="42" right="177"/>
-	<mx:Label x="257" y="44" text="(For encrypted Databases only)"/>
+		y="42" right="153" left="85"/>
+	<mx:Label x="277" y="44" text="(Encrypted databases only)"/>
 	<mx:Button label="Open"
 		enabled="{ selectedFile!=null}"
 		click=" openFile(hashTi.text)" 
-		x="61" y="72" width="82"/>
+		y="72" width="82" x="85"/>
 
 	<mx:HRule left="10" right="10" bottom="70"/>
 

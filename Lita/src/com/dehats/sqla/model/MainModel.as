@@ -2,6 +2,8 @@ package com.dehats.sqla.model
 {
 	import com.dehats.air.sqlite.SQLiteDBHelper;
 	import com.dehats.air.sqlite.SimpleEncryptionKeyGenerator;
+	import mx.utils.Base64Decoder;
+	import mx.utils.Base64Encoder;
 	
 	import flash.data.SQLColumnSchema;
 	import flash.data.SQLIndexSchema;
@@ -46,7 +48,19 @@ package com.dehats.sqla.model
 			
 			var key:ByteArray;
 			
-			if(pHash && pHash.length>0) key = generateEncryptionKey(pHash);
+			if (pHash && pHash.length > 0)
+			{
+				if (pHash.length == 24 && pHash.lastIndexOf("==") == 22)
+				{
+					var decoder:Base64Decoder = new Base64Decoder();
+					decoder.decode(pHash);
+					key = decoder.toByteArray();
+				}
+				else if (pHash.length == 64)
+				{
+					key = legacyGenerateEncryptionKey(pHash);
+				}
+			}
 			
 			try
 			{
@@ -78,6 +92,7 @@ package com.dehats.sqla.model
 				try
 				{
 					key = new SimpleEncryptionKeyGenerator().getEncryptionKey(pPassword, true);
+					showEncryptionKey(key);
 				}
 				catch(e:ArgumentError)
 				{
@@ -99,17 +114,18 @@ package com.dehats.sqla.model
 			
 			docTitle = dbFile.name+' - '+ (dbFile.size/1024)+' Kb' ;
 		}
-
+		
 		public function reencrypt(pPassword:String):void
 		{
 			if( dbFile==null ) return;
 			
 			var key:ByteArray = new SimpleEncryptionKeyGenerator().getEncryptionKey(pPassword, true);
+			showEncryptionKey(key);
 			db.reencrypt(key);
 		}
 
 		// Borrowed from Paul Roberston's EncryptionKeyGenerator
-		private function generateEncryptionKey(hash:String):ByteArray
+		private function legacyGenerateEncryptionKey(hash:String):ByteArray
 		{
 			var result:ByteArray = new ByteArray();
 			
@@ -124,6 +140,13 @@ package com.dehats.sqla.model
 			}
 			
 			return result;
+		}
+
+		private function showEncryptionKey(key:ByteArray):void
+		{
+			var encoder:Base64Encoder = new Base64Encoder();
+			encoder.encodeBytes(key);
+			Alert.show(encoder.toString(), "Base-64 encoded encryption key - Please note it down somewhere safe !");
 		}
 
 		// STRUCTURE
