@@ -2,8 +2,6 @@ package com.dehats.sqla.model
 {
 	import com.dehats.air.sqlite.SQLiteDBHelper;
 	import com.dehats.air.sqlite.SimpleEncryptionKeyGenerator;
-	import mx.utils.Base64Decoder;
-	import mx.utils.Base64Encoder;
 	
 	import flash.data.SQLColumnSchema;
 	import flash.data.SQLIndexSchema;
@@ -16,6 +14,8 @@ package com.dehats.sqla.model
 	import flash.utils.ByteArray;
 	
 	import mx.controls.Alert;
+	import mx.utils.Base64Decoder;
+	import mx.utils.Base64Encoder;
 	
 	[Bindable]
 	public class MainModel extends EventDispatcher
@@ -91,8 +91,7 @@ package com.dehats.sqla.model
 			{
 				try
 				{
-					key = new SimpleEncryptionKeyGenerator().getEncryptionKey(pPassword, true);
-					showEncryptionKey(key);
+					key = new SimpleEncryptionKeyGenerator().getEncryptionKey(pPassword, true);					
 				}
 				catch(e:ArgumentError)
 				{
@@ -111,6 +110,7 @@ package com.dehats.sqla.model
 				return;
 			}
 			
+			if(key!=null) showEncryptionKey(key);
 			
 			docTitle = dbFile.name+' - '+ (dbFile.size/1024)+' Kb' ;
 		}
@@ -119,9 +119,20 @@ package com.dehats.sqla.model
 		{
 			if( dbFile==null ) return;
 			
-			var key:ByteArray = new SimpleEncryptionKeyGenerator().getEncryptionKey(pPassword, true);
-			showEncryptionKey(key);
-			db.reencrypt(key);
+			try
+			{
+				var key:ByteArray = new SimpleEncryptionKeyGenerator().getEncryptionKey(pPassword, true);					
+			}
+			catch(e:ArgumentError)
+			{
+				Alert.show(e.message, "Error");
+				return;
+			}			
+			
+			var success:Boolean = db.reencrypt(key);
+			
+			if(success) showEncryptionKey(key);
+			else  Alert.show("The database could not be reencrypted, probably because it was not already encrypted.", "Error");
 		}
 
 		// Borrowed from Paul Roberston's EncryptionKeyGenerator
@@ -146,7 +157,7 @@ package com.dehats.sqla.model
 		{
 			var encoder:Base64Encoder = new Base64Encoder();
 			encoder.encodeBytes(key);
-			Alert.show(encoder.toString(), "Base-64 encoded encryption key - Please note it down somewhere safe !");
+			Alert.show("Here's your Base-64 encoded encryption key - Please note it down somewhere safe, you'll need it to open your DB using Lita !\n"+encoder.toString(), "Encryption done !");
 		}
 
 		// STRUCTURE

@@ -127,7 +127,7 @@
 					icon="{ AssetManager.ICON_CREATE_DB}"
 					click=" mainPM.promptCreateDBFile()"/>
 					
-				<mx:Button label="(Re)encrypt"
+				<mx:Button label="Re-encrypt"
 					icon="{ AssetManager.ICON_KEY_DB}"
 					click=" mainPM.promptReencrypt();"/>
 				
