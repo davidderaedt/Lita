@@ -1,14 +1,14 @@
 package com.dehats.air.sqlite
 {
-	import flash.filesystem.File;
 	import flash.utils.ByteArray;
 	
+	import mx.controls.Alert;
 	import mx.utils.SHA256;
 
 
 	/**
 	 * 
-	 * @author davidderaedt
+	 * @author Paul Robertson, davidderaedt
 	 * 
 	 * This class is a simplified version of Paul Roberston's
 	 * EncryptionKeyGenerator.
@@ -32,6 +32,8 @@ package com.dehats.air.sqlite
 		
 		private static const STRONG_PASSWORD_PATTERN:RegExp = /(?=^.{8,32}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/;		
 		
+		public static const PASSWORD_WARNING:String ="The password must be a strong password. It must be 8-32 characters long. It must contain at least one uppercase letter, at least one lowercase letter, and at least one number or symbol.";
+		
 		// ------- Constructor -------
 		public function SimpleEncryptionKeyGenerator()
 		{
@@ -50,12 +52,12 @@ package com.dehats.air.sqlite
 		}
 		
 		
-		public function getEncryptionKey(password:String):ByteArray
+		public function getEncryptionKey(password:String, pShowHash:Boolean=false):ByteArray
 		{
 			
 			if (!validateStrongPassword(password))
 			{
-				throw new ArgumentError("The password must be a strong password. It must be 8-32 characters long. It must contain at least one uppercase letter, at least one lowercase letter, and at least one number or symbol.");
+				throw new ArgumentError(PASSWORD_WARNING);
 			}
 									
 			var concatenatedPassword:String = concatenatePassword(password);
@@ -64,8 +66,6 @@ package com.dehats.air.sqlite
 			bytes.writeUTF(concatenatedPassword);
 			
 			var hashedKey:String = SHA256.computeDigest(bytes);
-			
-			trace(hashedKey);
 			
 			var encryptionKey:ByteArray = generateEncryptionKey(hashedKey);
 			

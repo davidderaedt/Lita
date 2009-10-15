@@ -268,7 +268,6 @@ package com.dehats.sqla.model.presentation
 			
 			mainModel.reencrypt( pPwd);
 			
-			Alert.show("Done !", "Information");
 		}
 		
 		public function goToHelp():void
