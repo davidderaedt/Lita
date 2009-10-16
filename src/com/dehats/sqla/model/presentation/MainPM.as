@@ -89,11 +89,19 @@ package com.dehats.sqla.model.presentation
 		
 		public function openDBFile(pFile:File, pHash:String=""):void
 		{
-			mainModel.openDBFile(pFile, false, pHash);
+			var success:Boolean = mainModel.openDBFile(pFile, false, pHash);
 			
-			fileManager.addRecentlyOpened(pFile);
-			
-			dispatchEvent(new Event(FILE_CHANGED));
+			if (success)
+			{
+				fileManager.addRecentlyOpened(pFile);
+				
+				dispatchEvent(new Event(FILE_CHANGED));
+				
+				if (pHash == MainModel.LEGACY_ENCRYPTION_KEY_HASH)
+				{
+					promptUpgradeEncryption();
+				}
+			}
 		}
 		
 		
@@ -153,6 +161,11 @@ package com.dehats.sqla.model.presentation
 			
 			mainView.promptReencryptDialog();
 		}	
+		
+		private function promptUpgradeEncryption():void
+		{
+			mainView.promptUpgradeEncryptionDialog();
+		}
 
 		public function onOpenFileDialogClosed(pEvt:Event):void
 		{
@@ -268,6 +281,7 @@ package com.dehats.sqla.model.presentation
 			
 			mainModel.reencrypt( pPwd);
 			
+			Alert.show("Done !", "Information");
 		}
 		
 		public function goToHelp():void

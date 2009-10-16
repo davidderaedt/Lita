@@ -41,7 +41,9 @@ package com.dehats.sqla.model
 		
 		// DataBase
 		
-		public function openDBFile(pFile:File, isNew:Boolean=false, pHash:String=""):void
+		public static const LEGACY_ENCRYPTION_KEY_HASH:String = "eb142b0cae0baa72a767ebc0823d1be94e14c5bfc52d8e417fc4302fceb6240c";
+		
+		public function openDBFile(pFile:File, isNew:Boolean=false, pHash:String=""):Boolean
 		{
 			
 			dbFile = pFile ;
@@ -50,13 +52,13 @@ package com.dehats.sqla.model
 			
 			if (pHash && pHash.length > 0)
 			{
-				if (pHash.length == 24 && pHash.lastIndexOf("==") == 22)
+				if (pHash.length == 24)
 				{
 					var decoder:Base64Decoder = new Base64Decoder();
 					decoder.decode(pHash);
 					key = decoder.toByteArray();
 				}
-				else if (pHash.length == 64)
+				else if (pHash == LEGACY_ENCRYPTION_KEY_HASH)
 				{
 					key = legacyGenerateEncryptionKey(pHash);
 				}
@@ -69,16 +71,16 @@ package com.dehats.sqla.model
 			catch(error:SQLError)
 			{
 				Alert.show(error.message+"\n"+error.details);
-				return;
+				return false;
 			}
-			
 			
 			docTitle = dbFile.name+' - '+ (dbFile.size/1024)+' Kb' ;
 			
 			loadSchema();
 			
 			if( dbTables && dbTables.length>0) selectTable(dbTables[0] );
-
+			
+			return true;
 		}
 		
 		public function createDBFile(pFile:File, pPassword:String=""):void
@@ -157,7 +159,7 @@ package com.dehats.sqla.model
 		{
 			var encoder:Base64Encoder = new Base64Encoder();
 			encoder.encodeBytes(key);
-			Alert.show("Here's your Base-64 encoded encryption key - Please note it down somewhere safe, you'll need it to open your DB using Lita !\n"+encoder.toString(), "Encryption done !");
+			Alert.show("Here's your Base64 encoded encryption key. Please note it down somewhere safe. You'll need it to open your DB using Lita !\n"+encoder.toString(), "Encryption done !");
 		}
 
 		// STRUCTURE

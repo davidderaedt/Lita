@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="424" height="290" 
+	title="Upgrade Your Database Encryption"
+	showCloseButton="true"
+	close=" PopUpManager.removePopUp(this)">
+
+	<mx:Script>
+		<![CDATA[
+			import mx.managers.PopUpManager;
+			import com.dehats.air.sqlite.SimpleEncryptionKeyGenerator;
+			import com.dehats.sqla.model.presentation.MainPM;
+			
+			[Bindable]
+			public var pm:MainPM;
+			
+			private function submit(pPwd:String):void
+			{
+				if(pPwd.length==0) return;
+				
+				pm.reencrypt( pPwd);
+				 
+				PopUpManager.removePopUp(this);
+			}
+			
+		]]>
+	</mx:Script>
+
+	<mx:Label x="10" y="10" text="Password"/>
+	
+	<mx:TextInput y="8" id="pwdTi" displayAsPassword="true"
+		enter=" submit(pwdTi.text)" left="73" right="20"/>
+		
+	<mx:Text 
+		text="Your database's encryption needs to be upgraded.{'\n'}Please enter a password to use to generate the new encryption key. {SimpleEncryptionKeyGenerator.PASSWORD_WARNING + '\n'}The encryption key will be created using the SimpleEncryptionKeyGenerator class. Once your database is upgraded, you will need to use the updated SimpleEncryptionKeyGenerator class in your application to open your database." left="10" right="10" bottom="10" top="40"/>
+	
+	<mx:ControlBar horizontalAlign="center">
+		<mx:Button label="Upgrade Encryption" styleName="WhiteButton"
+			click=" submit(pwdTi.text)"
+			enabled="{ pwdTi.text.length>0}"/>
+	</mx:ControlBar>
+	
+</mx:TitleWindow>
