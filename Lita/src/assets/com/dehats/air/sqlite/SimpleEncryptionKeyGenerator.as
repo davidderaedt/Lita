@@ -65,6 +65,7 @@ package com.dehats.air.sqlite
 			var bytes:ByteArray = new ByteArray();
 			bytes.writeUTF(concatenatedPassword);
 			
+			bytes.position = 0; // have to reset to 0 for an accurate hash
 			var hashedKey:String = SHA256.computeDigest(bytes);
 			
 			var encryptionKey:ByteArray = generateEncryptionKey(hashedKey);

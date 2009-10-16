@@ -7,5 +7,6 @@ package com.dehats.sqla.model.presentation
 		function promptAboutDialog():void;
 		function promptReencryptDialog():void;
 		function promptCommercialDialog():void;
+		function promptUpgradeEncryptionDialog():void;
 	}
 }

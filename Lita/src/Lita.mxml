@@ -15,6 +15,7 @@
 			import com.dehats.sqla.view.WelcomeDialog;
 			import com.dehats.sqla.view.CopyTableDialog;
 			import com.dehats.sqla.view.ReencryptionDialog;
+			import com.dehats.sqla.view.UpgradeEncryptionDialog;
 			import com.dehats.sqla.model.presentation.IMainView;
 			import com.dehats.sqla.view.CreateDBDialog;
 			import com.dehats.sqla.view.AboutWin;
@@ -86,6 +87,13 @@
 			public function promptReencryptDialog():void
 			{
 				var win:ReencryptionDialog = PopUpManager.createPopUp(this, ReencryptionDialog, true) as ReencryptionDialog;
+				win.pm = mainPM;
+				PopUpManager.centerPopUp(win);				
+			}
+
+			public function promptUpgradeEncryptionDialog():void
+			{
+				var win:UpgradeEncryptionDialog = PopUpManager.createPopUp(this, UpgradeEncryptionDialog, true) as UpgradeEncryptionDialog;
 				win.pm = mainPM;
 				PopUpManager.centerPopUp(win);				
 			}
