@@ -73,7 +73,7 @@
 		change=" pwd = pwdTi.text" left="133" right="10"/>
 
 	<mx:Text left="10" y="79" right="10"
-		text="*Encryption will be done using the SimpleEncryptionKeyGenerator class. { SimpleEncryptionKeyGenerator.PASSWORD_WARNING}" 
+		text="*Use this password to open the database in Lita. {SimpleEncryptionKeyGenerator.PASSWORD_WARNING + '\n'}An encryption key will be created using the SimpleEncryptionKeyGenerator class. To open your database in your code, use your password with the SimpleEncryptionKeyGenerator class, or use the encryption key directly." 
 		height="69"/>
 	
 	<mx:ControlBar horizontalAlign="center">

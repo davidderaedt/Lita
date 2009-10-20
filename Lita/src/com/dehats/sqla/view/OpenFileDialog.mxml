@@ -103,7 +103,7 @@
 		
 -->	
 
-	<mx:Label id="keyLbl" text="Base64 Key*" y="44" textAlign="right" x="7"/>
+	<mx:Label id="keyLbl" text="Password" y="44" textAlign="right" x="7"/>
 	
 	<mx:TextInput id="hashTi" displayAsPassword="true"
 		enter=" openFile(hashTi.text)" 

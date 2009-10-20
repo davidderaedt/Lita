@@ -52,7 +52,7 @@ package com.dehats.air.sqlite
 		}
 		
 		
-		public function getEncryptionKey(password:String, pShowHash:Boolean=false):ByteArray
+		public function getEncryptionKey(password:String):ByteArray
 		{
 			
 			if (!validateStrongPassword(password))

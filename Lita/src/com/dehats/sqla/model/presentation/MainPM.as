@@ -87,9 +87,9 @@ package com.dehats.sqla.model.presentation
 			openDBFile(fileManager.sample);
 		}
 		
-		public function openDBFile(pFile:File, pHash:String=""):void
+		public function openDBFile(pFile:File, pPassword:String=""):void
 		{
-			var success:Boolean = mainModel.openDBFile(pFile, false, pHash);
+			var success:Boolean = mainModel.openDBFile(pFile, false, pPassword);
 			
 			if (success)
 			{
@@ -97,7 +97,7 @@ package com.dehats.sqla.model.presentation
 				
 				dispatchEvent(new Event(FILE_CHANGED));
 				
-				if (pHash == MainModel.LEGACY_ENCRYPTION_KEY_HASH)
+				if (pPassword == MainModel.LEGACY_ENCRYPTION_KEY_HASH)
 				{
 					promptUpgradeEncryption();
 				}
