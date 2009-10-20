@@ -43,24 +43,23 @@ package com.dehats.sqla.model
 		
 		public static const LEGACY_ENCRYPTION_KEY_HASH:String = "eb142b0cae0baa72a767ebc0823d1be94e14c5bfc52d8e417fc4302fceb6240c";
 		
-		public function openDBFile(pFile:File, isNew:Boolean=false, pHash:String=""):Boolean
+		public function openDBFile(pFile:File, isNew:Boolean=false, pPassword:String=""):Boolean
 		{
 			
 			dbFile = pFile ;
 			
 			var key:ByteArray;
 			
-			if (pHash && pHash.length > 0)
+			if (pPassword && pPassword.length > 0)
 			{
-				if (pHash.length == 24)
+				try
 				{
-					var decoder:Base64Decoder = new Base64Decoder();
-					decoder.decode(pHash);
-					key = decoder.toByteArray();
+					key = new SimpleEncryptionKeyGenerator().getEncryptionKey(pPassword);					
 				}
-				else if (pHash == LEGACY_ENCRYPTION_KEY_HASH)
+				catch(e:ArgumentError)
 				{
-					key = legacyGenerateEncryptionKey(pHash);
+					Alert.show(e.message, "Error");
+					return false;
 				}
 			}
 			
@@ -70,8 +69,34 @@ package com.dehats.sqla.model
 			}
 			catch(error:SQLError)
 			{
-				Alert.show(error.message+"\n"+error.details);
-				return false;
+				if (pPassword != null && pPassword.length > 0)
+				{
+					// if they entered the Base64 encryption key instead of a password
+					if (pPassword != null && pPassword.length == 24 && pPassword.lastIndexOf("==") == 22)
+					{
+						var decoder:Base64Decoder = new Base64Decoder();
+						decoder.decode(pPassword);
+						key = decoder.toByteArray();
+					}
+					else if (pPassword != null && pPassword == LEGACY_ENCRYPTION_KEY_HASH) // if it's a legacy encrypted db
+					{
+						key = legacyGenerateEncryptionKey(pPassword);
+					}
+					try
+					{
+						db.openDBFile(dbFile, key);
+					}
+					catch(error2:SQLError)
+					{
+						Alert.show(error2.message+"\n"+error2.details);
+						return false;
+					}
+				}
+				else
+				{
+					Alert.show(error.message+"\n"+error.details);
+					return false;
+				}
 			}
 			
 			docTitle = dbFile.name+' - '+ (dbFile.size/1024)+' Kb' ;
@@ -93,7 +118,7 @@ package com.dehats.sqla.model
 			{
 				try
 				{
-					key = new SimpleEncryptionKeyGenerator().getEncryptionKey(pPassword, true);					
+					key = new SimpleEncryptionKeyGenerator().getEncryptionKey(pPassword);					
 				}
 				catch(e:ArgumentError)
 				{
@@ -123,7 +148,7 @@ package com.dehats.sqla.model
 			
 			try
 			{
-				var key:ByteArray = new SimpleEncryptionKeyGenerator().getEncryptionKey(pPassword, true);					
+				var key:ByteArray = new SimpleEncryptionKeyGenerator().getEncryptionKey(pPassword);					
 			}
 			catch(e:ArgumentError)
 			{
@@ -159,7 +184,15 @@ package com.dehats.sqla.model
 		{
 			var encoder:Base64Encoder = new Base64Encoder();
 			encoder.encodeBytes(key);
-			Alert.show("Here's your Base64 encoded encryption key. Please note it down somewhere safe. You'll need it to open your DB using Lita !\n"+encoder.toString(), "Encryption done !");
+			Alert.show("Here's your database's encryption key (Base64 encoded). Use this key to open your DB in other applications. (Use your password to open your DB in Lita.)\n"+encoder.toString(), "Encryption done !");
+		}
+		
+		public function getBase64FromPassword(pPassword:String):String
+		{
+			var key:ByteArray = new SimpleEncryptionKeyGenerator().getEncryptionKey(pPassword);
+			var encoder:Base64Encoder = new Base64Encoder();
+			encoder.encodeBytes(key);
+			return encoder.toString();
 		}
 
 		// STRUCTURE
