@@ -30,7 +30,7 @@ package com.dehats.sqla.model.presentation
 		public var sqldataViewPM:SQLDataViewPM ;
 		public var sqlStructureViewPM:SQLStructureViewPM ;
 		public var indicesPM:IndicesPM;
-		public var mainModel:MainModel = new MainModel();
+		public var mainModel:MainModel ;
 		
 		private var updater:ApplicationUpdaterUI = new ApplicationUpdaterUI();
 		private var fileManager:FileManager; 
@@ -43,6 +43,8 @@ package com.dehats.sqla.model.presentation
 
 		public function MainPM(pNativeApp:NativeApplication)
 		{
+			mainModel = new MainModel();
+			mainModel.addEventListener(MainModel.DB_CREATED, onDBCreated);
 			
 			fileManager = new FileManager();
 			
@@ -108,11 +110,12 @@ package com.dehats.sqla.model.presentation
 		public function createDBFile(pFile:File, pPwd:String=""):void
 		{
 			mainModel.createDBFile(pFile, pPwd);
-			
 			fileManager.addRecentlyOpened(pFile);
-			
-			dispatchEvent(new Event(FILE_CHANGED));
-			
+			dispatchEvent(new Event(FILE_CHANGED));			
+		}
+		
+		private function onDBCreated(pEvt:Event):void
+		{
 			tableListPM.createNewTable();
 		}
 
@@ -281,7 +284,6 @@ package com.dehats.sqla.model.presentation
 			
 			mainModel.reencrypt( pPwd);
 			
-			Alert.show("Done !", "Information");
 		}
 		
 		public function goToHelp():void
