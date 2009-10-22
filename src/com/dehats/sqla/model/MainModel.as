@@ -14,13 +14,19 @@ package com.dehats.sqla.model
 	import flash.utils.ByteArray;
 	
 	import mx.controls.Alert;
+	import mx.events.CloseEvent;
 	import mx.utils.Base64Decoder;
 	import mx.utils.Base64Encoder;
 	
 	[Bindable]
 	public class MainModel extends EventDispatcher
 	{
+		// Events
 		public static const TABLE_SELECTED:String = "tableSelected";
+		public static const DB_CREATED:String = "dbSelected";
+
+		// DataBase		
+		public static const LEGACY_ENCRYPTION_KEY_HASH:String = "eb142b0cae0baa72a767ebc0823d1be94e14c5bfc52d8e417fc4302fceb6240c";
 		
 		public var db:SQLiteDBHelper = new SQLiteDBHelper();
 		public var dbFile:File ;
@@ -39,9 +45,6 @@ package com.dehats.sqla.model
 		{
 		}
 		
-		// DataBase
-		
-		public static const LEGACY_ENCRYPTION_KEY_HASH:String = "eb142b0cae0baa72a767ebc0823d1be94e14c5bfc52d8e417fc4302fceb6240c";
 		
 		public function openDBFile(pFile:File, isNew:Boolean=false, pPassword:String=""):Boolean
 		{
@@ -50,54 +53,52 @@ package com.dehats.sqla.model
 			
 			var key:ByteArray;
 			
+			// First, if we have a password, we'll generate a key
 			if (pPassword && pPassword.length > 0)
 			{
-				try
+							
+				// if they entered the Base64 encryption key instead of a password
+				if (pPassword.length == 24 && pPassword.lastIndexOf("==") == 22)
 				{
-					key = new SimpleEncryptionKeyGenerator().getEncryptionKey(pPassword);					
+					var decoder:Base64Decoder = new Base64Decoder();
+					decoder.decode(pPassword);
+					key = decoder.toByteArray();
 				}
-				catch(e:ArgumentError)
+				// if it's a legacy encrypted db
+				else if (pPassword == LEGACY_ENCRYPTION_KEY_HASH) 
 				{
-					Alert.show(e.message, "Error");
-					return false;
+					key = legacyGenerateEncryptionKey(pPassword);
+				}				
+				
+				// for every other cases
+				else
+				{
+					try
+					{
+						key = new SimpleEncryptionKeyGenerator().getEncryptionKey(pPassword);					
+					}
+					catch(e:ArgumentError)
+					{
+						Alert.show(e.message, "Error");
+						return false;
+					}					
 				}
+				
 			}
-			
+
+
+			// Now we can open the db			
 			try
 			{
 				db.openDBFile(dbFile, key);
 			}
 			catch(error:SQLError)
 			{
-				if (pPassword != null && pPassword.length > 0)
-				{
-					// if they entered the Base64 encryption key instead of a password
-					if (pPassword != null && pPassword.length == 24 && pPassword.lastIndexOf("==") == 22)
-					{
-						var decoder:Base64Decoder = new Base64Decoder();
-						decoder.decode(pPassword);
-						key = decoder.toByteArray();
-					}
-					else if (pPassword != null && pPassword == LEGACY_ENCRYPTION_KEY_HASH) // if it's a legacy encrypted db
-					{
-						key = legacyGenerateEncryptionKey(pPassword);
-					}
-					try
-					{
-						db.openDBFile(dbFile, key);
-					}
-					catch(error2:SQLError)
-					{
-						Alert.show(error2.message+"\n"+error2.details);
-						return false;
-					}
-				}
-				else
-				{
-					Alert.show(error.message+"\n"+error.details);
-					return false;
-				}
+				Alert.show(error.message+"\n"+error.details);
+				return false;
 			}
+			
+			// We successfully opened the db
 			
 			docTitle = dbFile.name+' - '+ (dbFile.size/1024)+' Kb' ;
 			
@@ -137,7 +138,9 @@ package com.dehats.sqla.model
 				return;
 			}
 			
-			if(key!=null) showEncryptionKey(key);
+			if(key!=null) showEncryptionKey(key, true);
+			
+			else dispatchEvent(new Event(DB_CREATED));
 			
 			docTitle = dbFile.name+' - '+ (dbFile.size/1024)+' Kb' ;
 		}
@@ -158,8 +161,8 @@ package com.dehats.sqla.model
 			
 			var success:Boolean = db.reencrypt(key);
 			
-			if(success) showEncryptionKey(key);
-			else  Alert.show("The database could not be reencrypted, probably because it was not already encrypted.", "Error");
+			if(success) showEncryptionKey(key, false);
+			else  Alert.show("The database could not be re-encrypted, probably because it was not encrypted in the first place. Only databases which were encrypted when created can be re-encrypted.", "Error");
 		}
 
 		// Borrowed from Paul Roberston's EncryptionKeyGenerator
@@ -180,11 +183,25 @@ package com.dehats.sqla.model
 			return result;
 		}
 
-		private function showEncryptionKey(key:ByteArray):void
+		private function showEncryptionKey(key:ByteArray, isDBCreation:Boolean):void
 		{
 			var encoder:Base64Encoder = new Base64Encoder();
 			encoder.encodeBytes(key);
-			Alert.show("Here's your database's encryption key (Base64 encoded). Use this key to open your DB in other applications. (Use your password to open your DB in Lita.)\n"+encoder.toString(), "Encryption done !");
+			
+			// we want to dispatch the db created event only if a db was actually created
+			var callback:Function = null;			
+			if(isDBCreation) callback=onEncryptionKeyDialogClosed;
+			
+			Alert.show("Here's your database's encryption key (Base64 encoded). Use this key to open your DB in other applications. (Use your password to open your DB in Lita.)\n"+encoder.toString(), 
+				"Encryption done !",
+				Alert.OK,
+				null, 
+				callback);
+		}
+		
+		private function onEncryptionKeyDialogClosed(pEvt:CloseEvent):void
+		{
+			dispatchEvent(new Event(DB_CREATED));
 		}
 		
 		public function getBase64FromPassword(pPassword:String):String
