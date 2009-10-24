@@ -94,7 +94,9 @@ package com.dehats.sqla.model
 			}
 			catch(error:SQLError)
 			{
-				Alert.show(error.message+"\n"+error.details);
+				var notes:String="";
+				if(error.errorID==3138) notes="If the file is an encrypted database file, please provide a valid password.";
+				Alert.show(error.message+"\n\n"+notes, error.message);
 				return false;
 			}
 			
