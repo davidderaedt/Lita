@@ -136,14 +136,17 @@
 					click=" mainPM.promptCreateDBFile()"/>
 					
 				<mx:Button label="Re-encrypt"
+					enabled="{mainPM.mainModel.dbTables!=null}"
 					icon="{ AssetManager.ICON_KEY_DB}"
 					click=" mainPM.promptReencrypt();"/>
 				
 				<mx:Button label="Export DB"
+					enabled="{mainPM.mainModel.dbTables!=null}"
 					icon="{AssetManager.ICON_EXPORT_DB}"
 					click=" mainPM.exportDB()"/>
 				
 				<mx:Button label="Compact DB"
+					enabled="{mainPM.mainModel.dbTables!=null}"
 					icon="{AssetManager.ICON_COMPACT_DB}"
 					click=" mainPM.compact()"/>
 

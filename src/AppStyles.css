@@ -1,4 +1,8 @@
 /* CSS file */
+Alert
+{
+	font-size:12;
+}
 FormItemLabel
 {
 	fontSize: 12;
