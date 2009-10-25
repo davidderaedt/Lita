@@ -43,6 +43,7 @@ package com.dehats.sqla.model
 						
 		public function MainModel()
 		{
+		
 		}
 		
 		
