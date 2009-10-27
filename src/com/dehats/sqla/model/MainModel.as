@@ -1,33 +1,37 @@
 package com.dehats.sqla.model
 {
 	import com.dehats.air.sqlite.SQLiteDBHelper;
+	import com.dehats.air.sqlite.SQLiteErrorEvent;
 	import com.dehats.air.sqlite.SimpleEncryptionKeyGenerator;
+	import com.dehats.sqla.events.EncryptionErrorEvent;
 	
 	import flash.data.SQLColumnSchema;
 	import flash.data.SQLIndexSchema;
 	import flash.data.SQLSchemaResult;
 	import flash.data.SQLTableSchema;
-	import flash.errors.SQLError;
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.filesystem.File;
 	import flash.utils.ByteArray;
 	
-	import mx.controls.Alert;
 	import mx.utils.Base64Decoder;
 	import mx.utils.Base64Encoder;
 	
 	[Bindable]
 	public class MainModel extends EventDispatcher
 	{
+		// Events
 		public static const TABLE_SELECTED:String = "tableSelected";
+
+		// DataBase		
+		public static const LEGACY_ENCRYPTION_KEY_HASH:String = "eb142b0cae0baa72a767ebc0823d1be94e14c5bfc52d8e417fc4302fceb6240c";
 		
-		public var db:SQLiteDBHelper = new SQLiteDBHelper();
+		public var db:SQLiteDBHelper;
 		public var dbFile:File ;
-		public var docTitle:String;		
+		public var base64Key:String;
 		public var dbTables:Array ;
 		public var dbIndices:Array;
-		public var dbViews:Array;		
+		public var dbViews:Array;
 		public var selectedTable:SQLTableSchema;
 		public var tableRecords:Array;		
 		public var selectedColumn:SQLColumnSchema;
@@ -37,11 +41,15 @@ package com.dehats.sqla.model
 						
 		public function MainModel()
 		{
+			db = new SQLiteDBHelper();
+			db.addEventListener(SQLiteErrorEvent.EVENT_ERROR, onSQliteError);
 		}
 		
-		// DataBase
-		
-		public static const LEGACY_ENCRYPTION_KEY_HASH:String = "eb142b0cae0baa72a767ebc0823d1be94e14c5bfc52d8e417fc4302fceb6240c";
+		private function onSQliteError(pEvt:SQLiteErrorEvent):void
+		{
+			dispatchEvent(pEvt);
+		}
+				
 		
 		public function openDBFile(pFile:File, isNew:Boolean=false, pPassword:String=""):Boolean
 		{
@@ -50,67 +58,62 @@ package com.dehats.sqla.model
 			
 			var key:ByteArray;
 			
+			// First, if we have a password, we'll generate a key
 			if (pPassword && pPassword.length > 0)
 			{
-				try
+							
+				// if they entered the Base64 encryption key instead of a password
+				if (pPassword.length == 24 && pPassword.lastIndexOf("==") == 22)
 				{
-					key = new SimpleEncryptionKeyGenerator().getEncryptionKey(pPassword);					
+					var decoder:Base64Decoder = new Base64Decoder();
+					decoder.decode(pPassword);
+					key = decoder.toByteArray();
 				}
-				catch(e:ArgumentError)
+				// if it's a legacy encrypted db
+				else if (pPassword == LEGACY_ENCRYPTION_KEY_HASH) 
 				{
-					Alert.show(e.message, "Error");
-					return false;
-				}
-			}
-			
-			try
-			{
-				db.openDBFile(dbFile, key);
-			}
-			catch(error:SQLError)
-			{
-				if (pPassword != null && pPassword.length > 0)
-				{
-					// if they entered the Base64 encryption key instead of a password
-					if (pPassword != null && pPassword.length == 24 && pPassword.lastIndexOf("==") == 22)
-					{
-						var decoder:Base64Decoder = new Base64Decoder();
-						decoder.decode(pPassword);
-						key = decoder.toByteArray();
-					}
-					else if (pPassword != null && pPassword == LEGACY_ENCRYPTION_KEY_HASH) // if it's a legacy encrypted db
-					{
-						key = legacyGenerateEncryptionKey(pPassword);
-					}
-					try
-					{
-						db.openDBFile(dbFile, key);
-					}
-					catch(error2:SQLError)
-					{
-						Alert.show(error2.message+"\n"+error2.details);
-						return false;
-					}
-				}
+					key = legacyGenerateEncryptionKey(pPassword);
+				}				
+				
+				// for every other cases
 				else
 				{
-					Alert.show(error.message+"\n"+error.details);
-					return false;
+					try
+					{
+						key = new SimpleEncryptionKeyGenerator().getEncryptionKey(pPassword);					
+					}
+					catch(e:ArgumentError)
+					{
+						dispatchEvent( new EncryptionErrorEvent(EncryptionErrorEvent.EVENT_ENCRYPTION_ERROR, e));
+						return false;
+					}					
 				}
+				
 			}
+
+
+			// Now we can open the db
+			var success:Boolean = db.openDBFile(dbFile, key);
 			
-			docTitle = dbFile.name+' - '+ (dbFile.size/1024)+' Kb' ;
+			if(success==false) return false;
+ 			
+			// We successfully opened the db
 			
-			loadSchema();
-			
+			loadSchema(); 
+		
 			if( dbTables && dbTables.length>0) selectTable(dbTables[0] );
+		
+			return true;				
 			
-			return true;
 		}
 		
-		public function createDBFile(pFile:File, pPassword:String=""):void
+		
+		
+		public function createDBFile(pFile:File, pPassword:String=""):Boolean
 		{
 			dbFile = pFile ;
+			
+			// First, create the encryption if a password was provided
 			
 			var key:ByteArray;
 			
@@ -122,25 +125,24 @@ package com.dehats.sqla.model
 				}
 				catch(e:ArgumentError)
 				{
-					Alert.show(e.message, "Error");
-					return;
+					dispatchEvent( new EncryptionErrorEvent(EncryptionErrorEvent.EVENT_ENCRYPTION_ERROR, e));
+					return false;
 				}
 			}
 			
-			try
-			{
-				db.openDBFile(dbFile, key);
-			}
-			catch(error:SQLError)
-			{
-				Alert.show(error.message+"\n"+error.details);
-				return;
-			}
+			// then create the db
 			
-			if(key!=null) showEncryptionKey(key);
+			var success:Boolean = db.openDBFile(dbFile, key);
 			
-			docTitle = dbFile.name+' - '+ (dbFile.size/1024)+' Kb' ;
+			if(success==false) return false;			
+			
+			if(key!=null) getBase64EncryptionKey(key);
+			
+			return true;
+			
 		}
+		
+		
 		
 		public function reencrypt(pPassword:String):void
 		{
@@ -152,14 +154,17 @@ package com.dehats.sqla.model
 			}
 			catch(e:ArgumentError)
 			{
-				Alert.show(e.message, "Error");
+				dispatchEvent( new EncryptionErrorEvent(EncryptionErrorEvent.EVENT_ENCRYPTION_ERROR, e));
 				return;
 			}			
 			
+			
 			var success:Boolean = db.reencrypt(key);
 			
-			if(success) showEncryptionKey(key);
-			else  Alert.show("The database could not be reencrypted, probably because it was not already encrypted.", "Error");
+			if(success==false) return;
+			
+			getBase64EncryptionKey(key);
+			
 		}
 
 		// Borrowed from Paul Roberston's EncryptionKeyGenerator
@@ -180,13 +185,39 @@ package com.dehats.sqla.model
 			return result;
 		}
 
-		private function showEncryptionKey(key:ByteArray):void
+		private function getBase64EncryptionKey(key:ByteArray):void
 		{
 			var encoder:Base64Encoder = new Base64Encoder();
 			encoder.encodeBytes(key);
-			Alert.show("Here's your database's encryption key (Base64 encoded). Use this key to open your DB in other applications. (Use your password to open your DB in Lita.)\n"+encoder.toString(), "Encryption done !");
+			base64Key = encoder.toString();
+			
+
+/*			
+			// we want to dispatch the db created event only if a db was actually created
+			var callback:Function = null;			
+			if(isDBCreation) callback=onEncryptionKeyDialogClosed;
+			
+			Alert.show("Here's your database's encryption key (Base64 encoded). Use this key to open your DB in other applications. (Use your password to open your DB in Lita.)\n"+encoder.toString(), 
+				"Encryption done !",
+				Alert.OK,
+				null, 
+				callback);
+*/				
 		}
+/*		
+		private function onEncryptionKeyDialogClosed(pEvt:CloseEvent):void
+		{
+			dispatchEvent(new Event(DB_CREATED));
+		}
+*/
 		
+		
+		/**
+		 * 
+		 * @param pPassword
+		 * @return the base64 string
+		 * not used for now
+		 */		
 		public function getBase64FromPassword(pPassword:String):String
 		{
 			var key:ByteArray = new SimpleEncryptionKeyGenerator().getEncryptionKey(pPassword);
@@ -199,8 +230,11 @@ package com.dehats.sqla.model
 		
 		private function loadSchema():void
 		{
-			schemas =  db.getSchemas();
+
+			schemas =  db.getSchemas();				
+			
 			if(schemas==null) return;
+			
 			dbTables = schemas.tables;
 			dbIndices = schemas.indices;
 			dbViews = schemas.views;
@@ -244,11 +278,13 @@ package com.dehats.sqla.model
 		public function compact():Boolean
 		{
 			if(dbFile==null) return false;
-			db.compact();
+			
+			db.compact();				
+			
 			return true;
 		}
 		
-		public function exportDB(pData:Boolean=true):String
+		public function exportDB(pExportData:Boolean=true):String
 		{
 			
 			var str:String="";
@@ -258,7 +294,10 @@ package com.dehats.sqla.model
 				var table:SQLTableSchema = dbTables[i];
 				str+= table.sql + ";" +File.lineEnding+File.lineEnding;
 				
-				if(pData) str+= db.exportTableRecords( table)+File.lineEnding+File.lineEnding;
+				if(pExportData)
+				{
+					 str+= db.exportTableRecords( table)+File.lineEnding+File.lineEnding;										
+				}
 				
 			}
 			
@@ -271,7 +310,6 @@ package com.dehats.sqla.model
 		{
 			if(pTable==null)
 			{
-				Alert.show("Cannot select null table", "Error");
 				return;
 			} 
 			
@@ -282,26 +320,37 @@ package com.dehats.sqla.model
 			dispatchEvent( new Event(TABLE_SELECTED));
 		}
 		
+		
+		
 		public function createTable(pTableName:String, pDefaultCol:String):void
 		{
 			db.createTable(pTableName, [ pDefaultCol]);
 			
 			loadSchema();
+			
 			var table:SQLTableSchema = getTableByName( pTableName);
+			
 			if(table) selectTable(table);
 		}
 		
+		
+		
 		public function copyTable(pNewName:String, pCopyData:Boolean=true):void
 		{
-			db.copyTable( selectedTable, pNewName, pCopyData);
+			db.copyTable( selectedTable, pNewName, pCopyData);			
 			
 			loadSchema();
+			
 			selectTable( getTableByName( pNewName));
 		}
 
+
+
 		public function dropCurrentTable():void
 		{
+			
 			db.dropTable(selectedTable);
+			
 			loadSchema();
 			selectedTable = null ;
 			selectedColumn = null ;
@@ -312,6 +361,7 @@ package com.dehats.sqla.model
 		public function emptyCurrentTable():void
 		{
 			var tableName:String = selectedTable.name;
+			
 			db.emptyTable(selectedTable);
 			loadSchema();
 			selectedRecord = null ;
@@ -323,6 +373,7 @@ package com.dehats.sqla.model
 		public function renameTable(pName:String):void
 		{
 			db.renameTable( selectedTable, pName);
+			
 			loadSchema();
 			selectTable( getTableByName(pName));
 		}

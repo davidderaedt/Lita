@@ -4,12 +4,14 @@
 		   xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:components="com.dehats.flex.component.*">
 	<mx:Script>
 		<![CDATA[
+			import mx.events.CloseEvent;
+			import com.dehats.sqla.model.presentation.MainPM;
 			import com.dehats.air.sqlite.SQLType;
 			import com.dehats.sqla.model.MainModel;
 //			import com.dehats.air.SQLiteDBHelper;
 
 
-			public var mainModel:MainModel;
+			public var mainPM:MainPM;
 
 			private function createTable():void
 			{
@@ -21,9 +23,9 @@
 				if (incrementCb.selected)
 					colDef+=" AUTOINCREMENT";
 
-				mainModel.createTable(tableNameTi.text, colDef);
+				mainPM.createTable(tableNameTi.text, colDef);
 
-				dispatchEvent(new Event('create'));
+				dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
 			}
 		]]>
 	</mx:Script>
