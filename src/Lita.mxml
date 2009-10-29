@@ -25,14 +25,12 @@
 			import mx.controls.Alert;
 			import mx.managers.PopUpManager;
 			import mx.containers.TitleWindow;
-			import com.dehats.sqla.view.NewTableForm;
+			import com.dehats.sqla.view.CreateTableDialog;
 			import mx.events.CloseEvent;
 			import com.dehats.sqla.model.MainModel; 
 
 			[Bindable]
 			private var mainPM:MainPM = new MainPM(nativeApplication);
-
-			private var newTableDialog:TitleWindow;// tmp
 			
 			
 			private function onCreationComplete():void
@@ -64,24 +62,13 @@
 			}	
 			
 			// Dialogs
-		public function promptCreateNewTable():void
-		{
-			var newTableForm:NewTableForm = new NewTableForm();
-			newTableForm.mainPM = mainPM;
-			
-			newTableDialog = PopUpManager.createPopUp(this, TitleWindow, true) as TitleWindow;				
-			newTableDialog.addChild(newTableForm);
-			newTableDialog.title = "Create a new table";
-			newTableDialog.showCloseButton = true ;
-			newTableDialog.addEventListener(CloseEvent.CLOSE, closeNewTableDialog);
-			
-			PopUpManager.centerPopUp(newTableDialog);			
-		}
-
-		private function closeNewTableDialog(pEvt:Event):void
-		{
-			PopUpManager.removePopUp(newTableDialog) ;
-		}
+				
+			public function promptCreateNewTable():void
+			{				
+				var newTableForm:CreateTableDialog =  PopUpManager.createPopUp(this, CreateTableDialog, true) as CreateTableDialog;				
+				newTableForm.mainPM = mainPM;				
+				PopUpManager.centerPopUp(newTableForm);			
+			}
 		
 
 			public function promptOpenFileDialog(pClosable:Boolean=false):void
@@ -186,6 +173,7 @@
 			left="10" top="10" bottom="10" width="189"/>		
 		
 		<mx:TabNavigator left="207" bottom="10" top="10" right="10" creationPolicy="all"
+			selectedIndex="{mainPM.selectedTab}"
 			enabled="{ mainPM.isValidDBOpen}" 
 			selectedTabTextStyleName="SelectedTabText">
 

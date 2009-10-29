@@ -28,11 +28,18 @@ package com.dehats.sqla.model.presentation
 	{
 
 		public static const HELP_URL:String="http://www.dehats.com/drupal/?q=node/90";	
+
+		public static const TAB_STRUCTURE:int=0;
+		public static const TAB_DATA:int=1;
+		public static const TAB_INDICES:int=2;
+		public static const TAB_SQL:int=3;
+
 		
 		public var isValidDBOpen:Boolean=false;
 		public var docTitle:String;
 		public var fileInfos:String;
 		public var lastExecTime:int;
+		public var selectedTab:int=0;
 		
 		// Presentation models
 		public var sqlStatementPM:SQLStatementPM ;
@@ -40,6 +47,11 @@ package com.dehats.sqla.model.presentation
 		public var sqldataViewPM:SQLDataViewPM ;
 		public var sqlStructureViewPM:SQLStructureViewPM ;
 		public var indicesPM:IndicesPM;
+
+		public var selectedTable:SQLTableSchema;		
+		public var selectedColumn:SQLColumnSchema;
+		public var selectedRecord:Object;
+
 		
 		private var mainModel:MainModel ;
 		private var updater:ApplicationUpdaterUI = new ApplicationUpdaterUI();
@@ -63,7 +75,7 @@ package com.dehats.sqla.model.presentation
 			
 			tableListPM = new TableListPM( this);
 			indicesPM = new IndicesPM( this);
-			sqldataViewPM = new SQLDataViewPM( mainModel, fileManager);
+			sqldataViewPM = new SQLDataViewPM( this);
 			sqlStatementPM = new SQLStatementPM(this);			
 			sqlStructureViewPM = new SQLStructureViewPM(this);
 			
@@ -144,15 +156,12 @@ package com.dehats.sqla.model.presentation
 			fileManager.addRecentlyOpened(pFile);
 			isValidDBOpen =true;
 			updateFileInfos();
-			
-			tableListPM.dbTables = mainModel.dbTables;
-			indicesPM.dbIndices = mainModel.dbIndices;
-
+			refreshDB();
 		}
 		
 		private function updateFileInfos():void
 		{
-			docTitle = mainModel.dbFile.name+ " ("+ (mainModel.dbFile.size/1024) +")";
+			docTitle = mainModel.dbFile.name+ " ("+ (mainModel.dbFile.size/1024) +" Kb)";
 			fileInfos = mainModel.dbFile.nativePath;			
 		}
 						
@@ -273,75 +282,172 @@ package com.dehats.sqla.model.presentation
 			checkForUpdates();
 		}	
 		
-		// domain logic
+		// Domain logic
 		
-		public function removeIndex(pIndex:SQLIndexSchema):void
+		private function refreshDB():void
 		{
-			mainModel.removeIndex(pIndex);
+			tableListPM.dbTables = mainModel.dbTables;
+			indicesPM.dbIndices = mainModel.dbIndices;
+			
+			if( mainModel.dbTables && mainModel.dbTables.length>0) selectTable(mainModel.dbTables[0] );			
+
 		}
+
+		// tables
+		public function selectTable(pTable:SQLTableSchema):void
+		{			
+			selectedTable = pTable ;
+			selectColumn( null );
+			selectRecord( null );
+			
+			refreshRecords();
+			
+			sqlStructureViewPM.selectedTable = selectedTable;	
+			sqldataViewPM.selectedTable = selectedTable;		
+			tableListPM.selectedTable = selectedTable;
+			sqldataViewPM.tableRecords = mainModel.tableRecords;
+			
+		}
+
+		public function emptyTable():void
+		{			
+			mainModel.emptyTable(selectedTable);			
+			selectedRecord = null ;
+			sqldataViewPM.tableRecords = mainModel.tableRecords;
+		}
+		
+		public function renameTable(pName:String):void
+		{	
+			var table:SQLTableSchema = mainModel.renameTable(selectedTable,  pName);
+			tableListPM.dbTables = mainModel.dbTables;
+			selectTable(table);
+		}		
 
 		public function createTable(pName:String, pDefinition:String):void
 		{
-			mainModel.createTable(pName, pDefinition);
+			var table:SQLTableSchema = mainModel.createTable(pName, pDefinition);
+			tableListPM.dbTables = mainModel.dbTables;
+			if(table) selectTable(table);
+		}
+
+		public function copyTable(pName:String, pCopyData:Boolean):void
+		{
+			var table:SQLTableSchema = mainModel.copyTable(selectedTable, pName, pCopyData);
+			tableListPM.dbTables = mainModel.dbTables;
+			if(table) selectTable(table);	
+		}
+				
+		public function dropTable():void
+		{
+			mainModel.dropTable(selectedTable);
+			selectTable(null);
+			selectColumn(null);
+			selectRecord(null);
+			
+			tableListPM.dbTables = mainModel.dbTables;
 		}
 		
-		public function selectTable(pTable:SQLTableSchema):void
+		public function exportTable():void
 		{
-			mainModel.selectedTable =pTable;
-			sqlStructureViewPM.selectedTable = pTable;
+			var createString:String = selectedTable.sql;
+			fileManager.createExportFile(createString);			
 		}
+				
+		// records
+		public function selectRecord(pData:Object):void
+		{
+			selectedRecord = pData;
+			sqldataViewPM.selectedRecord = selectedRecord;
+		}
+	
+		public function createRecord(pRecord:Object):void
+		{
+			var obj:Object = mainModel.createRecord(selectedTable, pRecord);	
+			sqldataViewPM.tableRecords = mainModel.tableRecords;
+			selectRecord(obj );	
+		}
+		
+		public function updateRecord(pRecord:Object):void
+		{			
+			var obj:Object = mainModel.updateRecord(selectedTable, selectedRecord, pRecord);
+			sqldataViewPM.tableRecords = mainModel.tableRecords;
+			selectRecord(obj );			
+		}
+						
+		public function deleteRecord():void
+		{
+			mainModel.deleteRecord(selectedTable, selectedRecord);
+			sqldataViewPM.selectedRecord = null;
+		}
+				
+		public function exportRecords():void
+		{
+			var str:String = mainModel.exportRecords(selectedTable);
+			fileManager.createExportFile(str);	
+		}
+		
+		public function refreshRecords():void
+		{
+			mainModel.refreshRecords(selectedTable);
+			sqldataViewPM.tableRecords = mainModel.tableRecords;
+		}
+				
+		// Indices
 		
 		public function addIndex(pName:String):void
 		{
-			mainModel.addIndex(pName);
+			mainModel.addIndex(selectedTable, selectedColumn, pName);
+			indicesPM.dbIndices = mainModel.dbIndices;
+			selectedTab=TAB_INDICES;			
 		}
+				
+		public function removeIndex(pIndex:SQLIndexSchema):void
+		{
+			mainModel.removeIndex(pIndex);
+			indicesPM.dbIndices = mainModel.dbIndices;
+		}
+		
+		// Columns
 		
 		public function selectColumn(pCol:SQLColumnSchema):void
 		{
-			mainModel.selectedColumn = pCol;
+			selectedColumn = pCol;
 			sqlStructureViewPM.selectedColumn = pCol;
 		}
 		
 		public function renameColumn(pName:String):void
 		{
-			mainModel.renameColumn(pName);
+			var i:int = selectedTable.columns.indexOf(selectedColumn);
+			var table:SQLTableSchema = mainModel.renameColumn(selectedTable, selectedColumn, pName);
+			tableListPM.dbTables = mainModel.dbTables;
+			selectTable(table);
+			selectColumn( selectedTable.columns[i]);
+			
 		}
 
 		public function createColumn(pName:String, pDataType:String, pAllowNull:Boolean, pUnique:Boolean, pDefault:String):void
-		{
-			mainModel.addColumn(pName, pDataType, pAllowNull, pUnique, pDefault);
+		{			
+			var table:SQLTableSchema = mainModel.addColumn(selectedTable, pName, pDataType, pAllowNull, pUnique, pDefault);
+			
+			selectTable(table);
+			selectColumn( selectedTable.columns[ selectedTable.columns.length-1 ]);			
 		}
-		
-		public function renameTable(pName:String):void
-		{
-			mainModel.renameTable( pName);
-		}		
 
-		public function copyTable(pName:String, pCopyData:Boolean):void
-		{
-			mainModel.copyTable(pName, pCopyData);
-		}
-		
 		public function dropColumn():void
 		{
-			mainModel.removeColumn();
+			var table:SQLTableSchema = mainModel.removeColumn(selectedTable, selectedColumn.name);
+			selectTable(table);
+			selectColumn(null);		
 		}
 		
-		public function dropTable():void
-		{
-			mainModel.dropCurrentTable();
-		}
 		
-		public function exportTable():void
-		{
-			var createString:String = mainModel.selectedTable.sql;
-			fileManager.createExportFile(createString);			
-		}
+		// other
+
 		
 		public function executeStatement(pStatement:String):void
 		{			
 
-			var sqlResult:SQLResult =  mainModel.db.executeStatement(pStatement);
+			var sqlResult:SQLResult =  mainModel.executeStatement(pStatement);
 			
 			if( sqlResult==null) sqlStatementPM.results=[];
 			
@@ -423,6 +529,7 @@ package com.dehats.sqla.model.presentation
 		private function onSQLiteError(pEvt:SQLiteErrorEvent):void
 		{
 			var msg:String = pEvt.error.message;
+			trace(pEvt.error)
 			var notes:String="\n";
 			if(pEvt.error.errorID==3138) notes+="If the database file is encrypted, you may encounter this error if you've entered a wrong password.";
 			if(pEvt.statement!="") msg+="\n\n"+"Statement"+":\n"+pEvt.statement;

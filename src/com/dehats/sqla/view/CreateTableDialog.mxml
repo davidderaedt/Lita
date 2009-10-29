@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:Canvas creationComplete=" focusManager.setFocus(tableNameTi) "
-		   xmlns:adobe="http://www.adobe.com/2006/fc"
-		   xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:components="com.dehats.flex.component.*">
+<mx:TitleWindow xmlns:adobe="http://www.adobe.com/2006/fc" xmlns:mx="http://www.adobe.com/2006/mxml" 
+	xmlns:components="com.dehats.flex.component.*"
+	creationComplete=" focusManager.setFocus(tableNameTi) "	
+	showCloseButton="true"
+	close=" closeMe()"
+	title="Create a new Table">
+		   
 	<mx:Script>
 		<![CDATA[
+			import mx.managers.PopUpManager;
 			import mx.events.CloseEvent;
 			import com.dehats.sqla.model.presentation.MainPM;
 			import com.dehats.air.sqlite.SQLType;
@@ -12,6 +17,11 @@
 
 
 			public var mainPM:MainPM;
+			
+			private function closeMe():void
+			{
+				PopUpManager.removePopUp(this);
+			}
 
 			private function createTable():void
 			{
@@ -25,7 +35,7 @@
 
 				mainPM.createTable(tableNameTi.text, colDef);
 
-				dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
+				closeMe();
 			}
 		]]>
 	</mx:Script>
@@ -66,4 +76,4 @@
 					   label="Create"/>
 		</mx:FormItem>
 	</mx:Form>
-</mx:Canvas>
+</mx:TitleWindow>

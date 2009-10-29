@@ -7,9 +7,9 @@ package com.dehats.sqla.model
 	
 	import flash.data.SQLColumnSchema;
 	import flash.data.SQLIndexSchema;
+	import flash.data.SQLResult;
 	import flash.data.SQLSchemaResult;
 	import flash.data.SQLTableSchema;
-	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.filesystem.File;
 	import flash.utils.ByteArray;
@@ -20,23 +20,18 @@ package com.dehats.sqla.model
 	[Bindable]
 	public class MainModel extends EventDispatcher
 	{
-		// Events
-		public static const TABLE_SELECTED:String = "tableSelected";
 
 		// DataBase		
 		public static const LEGACY_ENCRYPTION_KEY_HASH:String = "eb142b0cae0baa72a767ebc0823d1be94e14c5bfc52d8e417fc4302fceb6240c";
 		
-		public var db:SQLiteDBHelper;
 		public var dbFile:File ;
 		public var base64Key:String;
 		public var dbTables:Array ;
 		public var dbIndices:Array;
 		public var dbViews:Array;
-		public var selectedTable:SQLTableSchema;
 		public var tableRecords:Array;		
-		public var selectedColumn:SQLColumnSchema;
-		public var selectedRecord:Object;
 				
+		private var db:SQLiteDBHelper;
 		private var schemas:SQLSchemaResult;
 						
 		public function MainModel()
@@ -100,9 +95,7 @@ package com.dehats.sqla.model
 			// We successfully opened the db
 			
 			loadSchema(); 
-		
-			if( dbTables && dbTables.length>0) selectTable(dbTables[0] );
-		
+				
 			return true;				
 			
 		}
@@ -190,28 +183,9 @@ package com.dehats.sqla.model
 			var encoder:Base64Encoder = new Base64Encoder();
 			encoder.encodeBytes(key);
 			base64Key = encoder.toString();
-			
-
-/*			
-			// we want to dispatch the db created event only if a db was actually created
-			var callback:Function = null;			
-			if(isDBCreation) callback=onEncryptionKeyDialogClosed;
-			
-			Alert.show("Here's your database's encryption key (Base64 encoded). Use this key to open your DB in other applications. (Use your password to open your DB in Lita.)\n"+encoder.toString(), 
-				"Encryption done !",
-				Alert.OK,
-				null, 
-				callback);
-*/				
+						
 		}
-/*		
-		private function onEncryptionKeyDialogClosed(pEvt:CloseEvent):void
-		{
-			dispatchEvent(new Event(DB_CREATED));
-		}
-*/
-		
-		
+	
 		/**
 		 * 
 		 * @param pPassword
@@ -304,82 +278,62 @@ package com.dehats.sqla.model
 			return str;
 		}
 		
-		// Tables
-		
-		public function selectTable(pTable:SQLTableSchema):void
+		public function executeStatement(pStatement:String):SQLResult
 		{
-			if(pTable==null)
-			{
-				return;
-			} 
-			
-			selectedTable = pTable ;
-			selectedColumn = null ;
-			selectedRecord = null ;
-			refreshRecords();
-			dispatchEvent( new Event(TABLE_SELECTED));
+			return db.executeStatement(pStatement);
 		}
 		
+		// Tables		
 		
-		
-		public function createTable(pTableName:String, pDefaultCol:String):void
+		public function createTable(pTableName:String, pDefaultCol:String):SQLTableSchema
 		{
 			db.createTable(pTableName, [ pDefaultCol]);
 			
 			loadSchema();
 			
-			var table:SQLTableSchema = getTableByName( pTableName);
+			return getTableByName( pTableName);
 			
-			if(table) selectTable(table);
 		}
 		
 		
 		
-		public function copyTable(pNewName:String, pCopyData:Boolean=true):void
+		public function copyTable(pTable:SQLTableSchema, pNewName:String, pCopyData:Boolean=true):SQLTableSchema
 		{
-			db.copyTable( selectedTable, pNewName, pCopyData);			
+			db.copyTable( pTable, pNewName, pCopyData);			
 			
 			loadSchema();
 			
-			selectTable( getTableByName( pNewName));
+			return getTableByName( pNewName);
 		}
 
 
 
-		public function dropCurrentTable():void
+		public function dropTable(pTable:SQLTableSchema):void
 		{
 			
-			db.dropTable(selectedTable);
+			db.dropTable(pTable);
 			
 			loadSchema();
-			selectedTable = null ;
-			selectedColumn = null ;
-			selectedRecord = null ;
+
 			tableRecords = [];
 		}
 
-		public function emptyCurrentTable():void
-		{
-			var tableName:String = selectedTable.name;
-			
-			db.emptyTable(selectedTable);
-			loadSchema();
-			selectedRecord = null ;
+		public function emptyTable(pTable:SQLTableSchema):void
+		{			
+			db.emptyTable(pTable);			
 			tableRecords = [];
-			selectTable(getTableByName( tableName));
 		}
 
 		
-		public function renameTable(pName:String):void
+		public function renameTable(pTable:SQLTableSchema, pName:String):SQLTableSchema
 		{
-			db.renameTable( selectedTable, pName);
-			
+			db.renameTable( pTable, pName);	
 			loadSchema();
-			selectTable( getTableByName(pName));
+			return getTableByName(pName);
 		}
 		
 		
-		private function getTableByName(pName:String):SQLTableSchema
+		public function getTableByName(pName:String):SQLTableSchema
 		{
 			for ( var i:int = 0 ; i < dbTables.length ; i++)
 			{
@@ -391,39 +345,35 @@ package com.dehats.sqla.model
 		
 		// Columns
 		
-		public function addColumn(pName:String, pDataType:String, pAllowNull:Boolean, pUnique:Boolean, pDefault:String):void
+		public function addColumn(pTable:SQLTableSchema, pName:String, pDataType:String, pAllowNull:Boolean, pUnique:Boolean, pDefault:String):SQLTableSchema
 		{
-			var tableName:String = selectedTable.name;
-			db.addColumn(selectedTable, pName, pDataType, pAllowNull, pUnique, pDefault);
+			var tableName:String = pTable.name;
+			db.addColumn(pTable, pName, pDataType, pAllowNull, pUnique, pDefault);
 			loadSchema();
-			selectTable(getTableByName( tableName));
-			selectedColumn = selectedTable.columns[ selectedTable.columns.length-1 ];
+			return getTableByName(tableName);
 		}
 		
-		public function removeColumn():void
-		{
-			var tableName:String = selectedTable.name;
-			db.removeColumn(selectedTable, selectedColumn.name);
+		public function removeColumn(pTable:SQLTableSchema, pColName:String):SQLTableSchema
+		{			
+			var tableName:String = pTable.name;
+			db.removeColumn(pTable, pColName);
 			loadSchema();
-			selectTable(getTableByName( tableName));
-			selectedColumn = null;
+			return getTableByName(tableName);
 		}
 
-		public function renameColumn(pName:String):void
+		public function renameColumn(pTable:SQLTableSchema, pCol:SQLColumnSchema, pName:String):SQLTableSchema
 		{
-			var tableName:String = selectedTable.name;
-			var j:int = selectedTable.columns.indexOf(selectedColumn);
-			db.renameColumn(selectedTable, selectedColumn.name, pName);
+			var tableName:String = pTable.name;
+			db.renameColumn(pTable, pCol.name, pName);
 			loadSchema();
-			selectTable(getTableByName( tableName));
-			selectedColumn = selectedTable.columns[j];
+			return getTableByName(tableName);
 		}
 		
 		// Indices
 		
-		public function addIndex(pName:String):void
+		public function addIndex(pTable:SQLTableSchema, pCol:SQLColumnSchema, pName:String):void
 		{
-			db.createIndex(pName, selectedTable, selectedColumn);
+			db.createIndex(pName, pTable, pCol);
 			loadSchema();
 		}
 		
@@ -434,47 +384,42 @@ package com.dehats.sqla.model
 		}
 		
 		// Data operations
-
-		public function selectRecord(pData:Object):void
-		{
-			selectedRecord = pData;
+		
+		public function updateRecord(pTable:SQLTableSchema, pOriginal:Object, pVo:Object):Object
+		{			
+			var i:int = tableRecords.indexOf(pOriginal);
+			db.updateRecord(pTable, pOriginal, pVo);
+			refreshRecords(pTable);
+			return  tableRecords[i];
 		}
 		
-		public function updateRecord(pVo:Object):void
+		public function createRecord(pTable:SQLTableSchema, pVo:Object):Object
 		{
-			var i:int = tableRecords.indexOf(selectedRecord);
-			db.updateRecord(selectedTable, selectedRecord, pVo);
-			refreshRecords();
-			selectRecord( tableRecords[i] );
-		}
-		
-		public function createRecord(pVo:Object):void
-		{
-			db.createRecord(selectedTable, pVo);
-			refreshRecords();
+			db.createRecord(pTable, pVo);
+			refreshRecords(pTable);
 			
 			if(tableRecords && tableRecords.length>0)
 			{
-				selectRecord( tableRecords[tableRecords.length-1] );
+				return tableRecords[tableRecords.length-1] ;
 			}
-			
+			return null;
 		}
 		
-		public function deleteRecord():void
+		public function deleteRecord(pTable:SQLTableSchema, pObj:Object):void
 		{
-			db.deleteRecord( selectedTable, selectedRecord);
-			refreshRecords();
+			db.deleteRecord( pTable, pObj);
+			refreshRecords(pTable);
 		}
 		
-		public function refreshRecords():void
+		public function refreshRecords(pTable:SQLTableSchema):void
 		{
-			if(selectedTable!=null)	tableRecords = db.getTableRecords(selectedTable);
-			selectedRecord=null;
+			if(pTable!=null)	tableRecords = db.getTableRecords(pTable);
+			else tableRecords=[];
 		}
 		
-		public function exportRecords():String
+		public function exportRecords(pTable:SQLTableSchema):String
 		{
-			return db.exportTableRecords( selectedTable);
+			return db.exportTableRecords( pTable);
 		}
 		
 	}

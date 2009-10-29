@@ -1,7 +1,7 @@
 package com.dehats.sqla.model.presentation
 {
-	import com.dehats.sqla.model.FileManager;
-	import com.dehats.sqla.model.MainModel;
+	import flash.data.SQLTableSchema;
+	import flash.events.Event;
 	
 	import mx.controls.Alert;
 	import mx.events.CloseEvent;
@@ -9,48 +9,59 @@ package com.dehats.sqla.model.presentation
 	[Bindable]
 	public class SQLDataViewPM extends AbstractPM
 	{
-				
-		public var mainModel:MainModel;
+		public static const EVENT_TABLE_SELECTED:String= "tableSelected";
 		
-		private var fileManager:FileManager;
+		public var tableRecords:Array
+		public var selectedRecord:Object;
 		
-		public function SQLDataViewPM(pModel:MainModel, pFileManager:FileManager)
+		private var mainPM:MainPM;
+		private var _selectedTable:SQLTableSchema;
+
+		public function get selectedTable():SQLTableSchema
 		{
-			mainModel = pModel;
-			fileManager = pFileManager;
-			super();
+			return _selectedTable;
+		}
+		
+		public function set selectedTable(pTable:SQLTableSchema):void
+		{
+			_selectedTable = pTable;
+			 dispatchEvent(new Event(EVENT_TABLE_SELECTED));
+		}
+		
+		public function SQLDataViewPM(pMainPM:MainPM)
+		{
+			mainPM = pMainPM;
 		}
 
 		public function selectRecord(pData:Object):void
 		{
-			mainModel.selectRecord(pData);			
+			mainPM.selectRecord(pData);			
 		}	
 
 		public function updateRecord(pModifiedItem:Object):void
 		{			
-			mainModel.updateRecord(pModifiedItem);
+			mainPM.updateRecord(pModifiedItem);
 		}
 
 		public function createRecord(pNewItem:Object):void
 		{
-			mainModel.createRecord(pNewItem);
+			mainPM.createRecord(pNewItem);
 		}
 
 		public function refresh():void
 		{
-			mainModel.refreshRecords();
+			mainPM.refreshRecords();
 		}
 
 		public function exportRecords():void
 		{
-			if( mainModel.tableRecords == null)
+			if( tableRecords == null)
 			{
 				Alert.show("Nothing to export !", "Error");
 				return;
 			}
 			
-			var str:String = mainModel.exportRecords();
-			fileManager.createExportFile(str);			
+			mainPM.exportRecords();
 		}
 
 		public function askEmptyCurrentTable():void
@@ -64,8 +75,18 @@ package com.dehats.sqla.model.presentation
 		
 		private function emptyTableAnswer(pEvt:CloseEvent):void
 		{
-			if( pEvt.detail == Alert.YES) mainModel.emptyCurrentTable();
+			if( pEvt.detail == Alert.YES) mainPM.emptyTable();//mainModel.emptyCurrentTable();
 		}	
+
+
+		public function deleteRecord():void
+		{
+			Alert.show("Are you sure you want to delete this record ?", "Warning", Alert.YES| Alert.NO, null,deleteRecordAnswer); 
+		}
 		
+		private function deleteRecordAnswer(pEvt:CloseEvent):void
+		{
+			if( pEvt.detail== Alert.YES) mainPM.deleteRecord( )
+		}		
 	}
 }
