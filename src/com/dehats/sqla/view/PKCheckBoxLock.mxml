@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:CheckBox xmlns:mx="http://www.adobe.com/2006/mxml"
+	label="Lock"
+	selected="true"
+	click=" targetComp.enabled = !selected">
+	<mx:Script>
+		<![CDATA[
+			import mx.core.UIComponent;
+			
+			public var targetComp:UIComponent;
+						
+		]]>
+	</mx:Script>
+</mx:CheckBox>
