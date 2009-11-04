@@ -1,23 +1,22 @@
 package com.dehats.sqla.model.presentation
 {
-	import com.dehats.sqla.model.MainModel;
-	
 	import flash.data.SQLIndexSchema;
 	
 	[Bindable]
 	public class IndicesPM extends AbstractPM
 	{
 		
-		public var model:MainModel;
+		public var mainPM:MainPM;
+		public var dbIndices:Array;
 		
-		public function IndicesPM(pModel:MainModel)
+		public function IndicesPM(pMainPM:MainPM)
 		{
-			model = pModel;
+			mainPM = pMainPM;
 		}
 		
 		public function removeIndex(pINdex:SQLIndexSchema):void
 		{
-			model.removeIndex( pINdex);
+			mainPM.removeIndex( pINdex);
 		}		
 		
 	}

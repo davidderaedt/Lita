@@ -25,7 +25,7 @@
 			import mx.controls.Alert;
 			import mx.managers.PopUpManager;
 			import mx.containers.TitleWindow;
-			import com.dehats.sqla.view.NewTableForm;
+			import com.dehats.sqla.view.CreateTableDialog;
 			import mx.events.CloseEvent;
 			import com.dehats.sqla.model.MainModel; 
 
@@ -62,6 +62,14 @@
 			}	
 			
 			// Dialogs
+				
+			public function promptCreateNewTable():void
+			{				
+				var newTableForm:CreateTableDialog =  PopUpManager.createPopUp(this, CreateTableDialog, true) as CreateTableDialog;				
+				newTableForm.mainPM = mainPM;				
+				PopUpManager.centerPopUp(newTableForm);			
+			}
+		
 
 			public function promptOpenFileDialog(pClosable:Boolean=false):void
 			{				
@@ -119,52 +127,54 @@
 
 		<mx:ApplicationControlBar x="29" y="49" dock="true">
 		
-				<mx:Image source="{ AssetManager.LOGO_ICON}"/>
+			<mx:Image source="{ AssetManager.LOGO_ICON}"/>
+			
+			<mx:Label text="{ mainPM.docTitle}" 
+				toolTip="{ mainPM.fileInfos}" 
+				fontSize="12"/>
+			
+			<mx:Spacer width="100%"/>
+			
+			<mx:Button label="Open DB File"
+				icon="{AssetManager.ICON_OPEN_DB}"
+				click=" mainPM.promptOpenFile()"/>
 				
-				<mx:Label text="{ mainPM.docTitle}" 
-					toolTip="{ mainPM.fileInfos}" 
-					fontSize="12"/>
+			<mx:Button label="Create DB File"
+				icon="{ AssetManager.ICON_CREATE_DB}"
+				click=" mainPM.promptCreateDBFile()"/>
 				
-				<mx:Spacer width="100%"/>
-				
-				<mx:Button label="Open DB File"
-					icon="{AssetManager.ICON_OPEN_DB}"
-					click=" mainPM.promptOpenFile()"/>
-					
-				<mx:Button label="Create DB File"
-					icon="{ AssetManager.ICON_CREATE_DB}"
-					click=" mainPM.promptCreateDBFile()"/>
-					
-				<mx:Button label="Re-encrypt"
-					enabled="{mainPM.mainModel.dbTables!=null}"
-					icon="{ AssetManager.ICON_KEY_DB}"
-					click=" mainPM.promptReencrypt();"/>
-				
-				<mx:Button label="Export DB"
-					enabled="{mainPM.mainModel.dbTables!=null}"
-					icon="{AssetManager.ICON_EXPORT_DB}"
-					click=" mainPM.exportDB()"/>
-				
-				<mx:Button label="Compact DB"
-					enabled="{mainPM.mainModel.dbTables!=null}"
-					icon="{AssetManager.ICON_COMPACT_DB}"
-					click=" mainPM.compact()"/>
+			<mx:Button label="Re-encrypt"
+				enabled="{mainPM.isValidDBOpen}"
+				icon="{ AssetManager.ICON_KEY_DB}"
+				click=" mainPM.promptReencrypt();"/>
+			
+			<mx:Button label="Export DB"
+				enabled="{mainPM.isValidDBOpen}"
+				icon="{AssetManager.ICON_EXPORT_DB}"
+				click=" mainPM.exportDB()"/>
+			
+			<mx:Button label="Compact DB"
+				enabled="{mainPM.isValidDBOpen}"
+				icon="{AssetManager.ICON_COMPACT_DB}"
+				click=" mainPM.compact()"/>
 
-				<mx:Button label="About"
-					icon="{ AssetManager.ICON_HELP}"
-					click=" mainPM.promptAboutDialog()"/>
+			<mx:Button label="About"
+				icon="{ AssetManager.ICON_HELP}"
+				click=" mainPM.promptAboutDialog()"/>
 					
 		</mx:ApplicationControlBar>
 
-		<mx:Label color="#FFFFFF" text="{'Last statement executed in '+mainPM.mainModel.db.lastExecutionTime+' ms'}" y="10" right="10" />
+		<mx:Label color="#FFFFFF" y="10" right="10"
+			text="{'Last statement executed in '+mainPM.lastExecTime+' ms'}" />
 
 		<view:TableListView
-			enabled="{ mainPM.mainModel.dbFile!=null}"
-			mainPM="{ mainPM.tableListPM}" 
+			enabled="{ mainPM.isValidDBOpen}"
+			pm="{ mainPM.tableListPM}" 
 			left="10" top="10" bottom="10" width="189"/>		
 		
 		<mx:TabNavigator left="207" bottom="10" top="10" right="10" creationPolicy="all"
-			enabled="{ mainPM.mainModel.dbFile!=null}"
+			selectedIndex="{mainPM.selectedTab}"
+			enabled="{ mainPM.isValidDBOpen}" 
 			selectedTabTextStyleName="SelectedTabText">
 
 			<view:SQLStructureView id="structureTab" label="Structure" width="100%" height="100%" 

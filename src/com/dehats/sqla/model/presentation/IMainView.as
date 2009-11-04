@@ -8,5 +8,7 @@ package com.dehats.sqla.model.presentation
 		function promptReencryptDialog():void;
 		function promptCommercialDialog():void;
 		function promptUpgradeEncryptionDialog():void;
+		function promptCreateNewTable():void;
+		
 	}
 }

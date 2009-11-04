@@ -56,8 +56,7 @@ package com.dehats.sqla.model
 			
 			if(! dest.exists) zipFile.copyTo( dest, true);
 			
-			getRecentlyOpened();
-
+			getRecentlyOpened();		
 		}
 
 

@@ -11,7 +11,7 @@
 			import com.dehats.sqla.model.AssetManager;
 			
 			[Bindable]
-			public var mainPM:TableListPM;
+			public var pm:TableListPM;
 			
 			private function myIconFunction(pItem:Object):Class
 			{
@@ -26,14 +26,14 @@
 -->	<mx:List id="tableList"
 		styleName="TableList" 
 		iconFunction="myIconFunction"
-		selectedItem="{ mainPM.mainModel.selectedTable }"
-		change=" mainPM.selectTable( tableList.selectedItem as SQLTableSchema)"
+		selectedItem="{ pm.selectedTable }"
+		change=" pm.selectTable( tableList.selectedItem as SQLTableSchema)"
 		labelField="name"
-		dataProvider="{mainPM.mainModel.dbTables}" 
+		dataProvider="{pm.dbTables}" 
 		top="0" left="0" right="0" bottom="40"></mx:List>
 	
 	<mx:Button label="Add Table" 
 		icon="{ AssetManager.ICON_CREATE_TABLE}"
-		click=" mainPM.createNewTable()" left="10" right="10" bottom="10"/>
+		click=" pm.createNewTable()" left="10" right="10" bottom="10"/>
 	
 </mx:Panel>

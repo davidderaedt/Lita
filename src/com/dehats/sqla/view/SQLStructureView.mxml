@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:Canvas enabled="{ pm.mainModel.selectedTable!=null}"
+<mx:Canvas enabled="{ pm.selectedTable!=null}"
 		   height="600"
 		   width="800"
+		   click="trace(pm.selectedTable)"
 		   xmlns:components="com.dehats.flex.component.*"
 		   xmlns:mx="http://www.adobe.com/2006/mxml"
 		   xmlns:ns1="com.adobe.flex.extras.controls.*">
@@ -29,8 +30,9 @@
 			{				
 				//typeCMB.selectedItem.toString()
 				if(typeACTI.text=="") typeACTI.text="TEXT";
-				pm.mainModel.addColumn(colNameTi.text, typeACTI.text, nullCB.selected, uniqueCb.selected, defaultTi.text);
+				pm.addColumn(colNameTi.text, typeACTI.text, nullCB.selected, uniqueCb.selected, defaultTi.text);
 				colNameTi.text="";
+				colNameTi.setFocus();
 			}
 			
 			public function promptCopyTableDialog():void
@@ -48,13 +50,13 @@
 		text="Table Name"/>
 	
 	<mx:TextInput id="tableNameTi"
-		enter="pm.mainModel.renameTable( tableNameTi.text)"
-		text="{ pm.mainModel.selectedTable.name}" 
+		enter="pm.renameTable( tableNameTi.text)"
+		text="{ pm.selectedTable.name}" 
 		width="118"  x="102" y="8" />
 	
 	<mx:Button x="228" y="8" label="Rename" 
 		icon="{ AssetManager.ICON_REFRESH_TABLE}"
-		click="pm.mainModel.renameTable( tableNameTi.text)"/>
+		click="pm.renameTable( tableNameTi.text)"/>
 		
 
 	<mx:Button y="8" label="Export Structure" right="131"
@@ -71,9 +73,9 @@
 		click="  promptCopyTableDialog()" right="273"/>
 	
 	<mx:DataGrid id="columnsDG"
-		change=" pm.mainModel.selectedColumn = columnsDG.selectedItem as SQLColumnSchema "
-		selectedItem="{pm.mainModel.selectedColumn}"
-		dataProvider="{ pm.mainModel.selectedTable.columns }" left="10" right="10" bottom="291" top="38">
+		change=" pm.selectColumn( columnsDG.selectedItem as SQLColumnSchema )"
+		selectedItem="{pm.selectedColumn}"
+		dataProvider="{ pm.selectedTable.columns }" left="10" right="10" bottom="291" top="38">
 		<mx:columns>
 			<mx:DataGridColumn headerText="Field Name" dataField="name"/>
 			<mx:DataGridColumn headerText="Data Type" dataField="dataType" width="100"/>
@@ -88,35 +90,35 @@
 	<mx:HBox bottom="10" height="273" left="10" right="10">
 	
 		<mx:Form x="10" bottom="10" height="100%"
-			enabled="{ pm.mainModel.selectedColumn!=null}" width="50%">
+			enabled="{ pm.selectedColumn!=null}" width="50%">
 			
 			<mx:FormHeading label="Selected Field"/>
 			<mx:FormItem label="Field Name" direction="horizontal">			
 				<mx:TextInput id="selectedColNameTi" 
-					enter="pm.mainModel.renameColumn( selectedColNameTi.text);"
-					text="{ pm.mainModel.selectedColumn.name}"/>
+					enter="pm.renameColumn( selectedColNameTi.text);"
+					text="{ pm.selectedColumn.name}"/>
 				<mx:Button label="Rename"
 					icon="{AssetManager.ICON_REFRESH}"
-					click=" pm.mainModel.renameColumn( selectedColNameTi.text);"/>				
+					click=" pm.renameColumn( selectedColNameTi.text);"/>				
 			</mx:FormItem>
 			<mx:FormItem label="Field Type">
-					<mx:Label id="dataTypeLabel" text="{ pm.mainModel.selectedColumn.dataType }"/>								
+					<mx:Label id="dataTypeLabel" text="{ pm.selectedColumn.dataType }"/>								
 			</mx:FormItem>
 			<mx:FormItem label="Allow null">
-					<mx:CheckBox enabled="false" selected="{ pm.mainModel.selectedColumn.allowNull}"	/>					
+					<mx:CheckBox enabled="false" selected="{ pm.selectedColumn.allowNull}"	/>					
 			</mx:FormItem>
 			<mx:FormItem label="Is Primary key">
-					<mx:CheckBox enabled="false" selected="{ pm.mainModel.selectedColumn.primaryKey }"/>								
+					<mx:CheckBox enabled="false" selected="{ pm.selectedColumn.primaryKey }"/>								
 			</mx:FormItem>
 			<mx:FormItem label="Auto increment">
-					<mx:CheckBox enabled="false" selected="{ pm.mainModel.selectedColumn.autoIncrement }"/>								
+					<mx:CheckBox enabled="false" selected="{ pm.selectedColumn.autoIncrement }"/>								
 			</mx:FormItem>
 			<mx:FormItem label="Add Index" direction="horizontal">
 				<mx:TextInput id="indexNameTi"/>
 				<mx:Button label="Add" 
 					enabled="{indexNameTi.text.length>0}"
 					icon="{AssetManager.ICON_ADD_KEY}"
-					click=" pm.mainModel.addIndex( indexNameTi.text); indexNameTi.text=''"/>
+					click=" pm.addIndex( indexNameTi.text); indexNameTi.text=''"/>
 			</mx:FormItem>
 			<mx:FormItem>
 			</mx:FormItem>
@@ -130,7 +132,8 @@
 		</mx:Form>
 
 		<mx:Form 
-			enabled="{ pm.mainModel.selectedTable != null}" 
+			defaultButton="{addFiledBt}"
+			enabled="{ pm.selectedTable != null}" 
 			x="345" bottom="10" height="100%" width="50%">
 		
 			<mx:FormHeading label="New Field" />
@@ -153,7 +156,8 @@
 				<mx:CheckBox id="uniqueCb" label="Unique" enabled="false"/>
 			</mx:FormItem>
 			<mx:FormItem>
-				<mx:Button label="Add Field" 
+				<mx:Button id="addFiledBt"
+					label="Add Field"
 					enabled="{colNameTi.text.length>0}"
 					icon="{ AssetManager.ICON_ADD}"
 					click=" addField();"/>
