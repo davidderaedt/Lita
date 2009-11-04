@@ -328,6 +328,8 @@ package com.dehats.sqla.model.presentation
 			var table:SQLTableSchema = mainModel.createTable(pName, pDefinition);
 			tableListPM.dbTables = mainModel.dbTables;
 			if(table) selectTable(table);
+			
+			selectedTab = TAB_STRUCTURE;
 		}
 
 		public function copyTable(pName:String, pCopyData:Boolean):void
