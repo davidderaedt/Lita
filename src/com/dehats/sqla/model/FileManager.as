@@ -45,25 +45,18 @@ package com.dehats.sqla.model
 
 			// Copy the SimpleEncryption class the applicationStorageDirectory
 			
-			var comDir:File = File.applicationDirectory.resolvePath("com");
-			var dest:File = File.applicationStorageDirectory.resolvePath("com");
+			var zipFile:File = File.applicationDirectory.resolvePath("assets/Encryption.zip");
+			var dest:File = File.applicationStorageDirectory.resolvePath("Encryption.zip");
 
-			if(! comDir.exists )
+			if(! zipFile.exists )
 			{
-				trace("Unable to find com dir");
+				trace("Unable to find Encryption class zip file");
 				return;
 			}
 			
-			if(! dest.exists) comDir.copyTo( dest, true);
+			if(! dest.exists) zipFile.copyTo( dest, true);
 			
-			getRecentlyOpened();
-
-/*			
-			if( recentlyOpened.length==0) 
-			{
-				addRecentlyOpened( sample);
-			}
-*/			
+			getRecentlyOpened();		
 		}
 
 
