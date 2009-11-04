@@ -7,7 +7,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package com.dehats.flex.component
+package com.dehats.flex.controls
 {
 import flash.events.Event;
 import flash.events.FocusEvent;

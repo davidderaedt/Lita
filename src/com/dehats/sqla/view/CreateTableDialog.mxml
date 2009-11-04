@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:TitleWindow xmlns:adobe="http://www.adobe.com/2006/fc" xmlns:mx="http://www.adobe.com/2006/mxml" 
-	xmlns:components="com.dehats.flex.component.*"
+	xmlns:components="com.dehats.flex.controls.*"
 	creationComplete=" focusManager.setFocus(tableNameTi) "	
 	showCloseButton="true"
 	close=" closeMe()"

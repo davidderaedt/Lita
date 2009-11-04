@@ -5,7 +5,7 @@
 
 	<mx:Script>
 		<![CDATA[
-			import com.dehats.flex.component.DateTimeEditor;
+			import com.dehats.flex.controls.DateTimeEditor;
 			import mx.binding.utils.BindingUtils;
 			import mx.controls.Alert;
 			import mx.events.CloseEvent;

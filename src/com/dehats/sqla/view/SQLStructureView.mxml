@@ -3,7 +3,7 @@
 		   height="600"
 		   width="800"
 		   click="trace(pm.selectedTable)"
-		   xmlns:components="com.dehats.flex.component.*"
+		   xmlns:components="com.dehats.flex.controls.*"
 		   xmlns:mx="http://www.adobe.com/2006/mxml"
 		   xmlns:ns1="com.adobe.flex.extras.controls.*">
 		   
