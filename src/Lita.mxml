@@ -11,7 +11,7 @@
 	<mx:Style source="AppStyles.css"/>
 
 	<mx:Script>
-		<![CDATA[
+		<![CDATA[ 
 			import com.dehats.sqla.view.WelcomeDialog;
 			import com.dehats.sqla.view.CopyTableDialog;
 			import com.dehats.sqla.view.ReencryptionDialog;
