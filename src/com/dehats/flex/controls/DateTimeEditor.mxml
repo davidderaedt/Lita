@@ -5,32 +5,55 @@
 		<![CDATA[
 			
 			[Bindable]
-			public var selectedDate:Date;						
+			private var _selectedDate:Date;		
 			
+			[Bindable]
+			protected var hours:int; 
+			
+			[Bindable]
+			protected var minutes:int;
+			
+			[Bindable]
+			protected var seconds:int;
+			
+			
+			public function get selectedDate():Date
+			{
+				return _selectedDate;
+			}
+
+			public function set selectedDate(value:Date):void
+			{
+				_selectedDate = value;
+				hours = _selectedDate.hours;
+				minutes = _selectedDate.minutes;
+				seconds = _selectedDate.seconds; 
+			}
+
 		]]>
 	</mx:Script>
 
-	<mx:DateField x="0" y="1" id="df" selectedDate="{selectedDate}"
+	<mx:DateField x="0" y="1" id="df" selectedDate="{_selectedDate}"
 		change=" selectedDate = df.selectedDate"/>
 		
 	<mx:NumericStepper x="82" y="1" minimum="0" maximum="23" width="40" 
-		value="{ selectedDate.hours}" 
+		value="{ hours}" 
 		id="hoursNs"
-		enabled="{ selectedDate!=null}"
+		enabled="{ _selectedDate!=null}"
 		change=" selectedDate.hours= hoursNs.value"/>		
 	<mx:Label x="122" y="3" text="h"/>
 	
 	<mx:NumericStepper x="134" y="1" maximum="59" width="40" 
-		value="{ selectedDate.minutes}" 
+		value="{ minutes}" 
 		id="minsNs"
-		enabled="{ selectedDate!=null}"
+		enabled="{ _selectedDate!=null}"
 		change=" selectedDate.minutes = minsNs.value"/>		
 	<mx:Label x="173" y="3" text="mn"/>
 	
 	<mx:NumericStepper x="192" y="1" maximum="59" width="40" 
-		value="{ selectedDate.seconds}" 
+		value="{ seconds}" 
 		id="secsNs"
-		enabled="{ selectedDate!=null}"
+		enabled="{ _selectedDate!=null}"
 		change=" selectedDate.seconds = secsNs.value"/>
 	<mx:Label x="232" y="3" text="s" width="13"/>
 	

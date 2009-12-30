@@ -42,7 +42,7 @@
 								
 				mainPM.initialize( this);
 				
-				center();				
+				center();		
 			}	
 
 			// workaround to fix the quit bug on OSX with the update framework			
