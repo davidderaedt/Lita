@@ -2,7 +2,7 @@
 <mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute"
 	xmlns:component="com.dehats.flex.component.*" 
 	xmlns:ns1="com.dehats.sqla.view.*"
-	width="446" height="260"
+	width="446" height="146"
 	showCloseButton="{ closable}"
 	close=" closeMe()"
 	creationComplete=" onCreationComplete();"
@@ -79,7 +79,7 @@
 		change=" selectedFile = new File( fileListCmb.selectedItem.path)"
 		labelField="name"
 		dataProvider="{ pm.recentlyOpenedFiles }"
-		left="85" right="58"></mx:ComboBox>
+		left="85" right="123"></mx:ComboBox>
 
 	<mx:TextInput id="pathTi" left="85"
 		visible="false"
@@ -88,7 +88,7 @@
 	<mx:Button 
 		toolTip="Browse for a file"
 		click=" promptOpen()"
-		label="..." y="12" right="10"/>
+		label="..." y="11" right="85" width="30"/>
 		
 	
 	<mx:Label x="38" text="DB File" y="14"/>
@@ -108,17 +108,15 @@
 	<mx:TextInput id="hashTi" displayAsPassword="true"
 		enter=" openFile(hashTi.text)" 
 		y="42" right="153" left="85"/>
-	<mx:Label x="277" y="44" text="(Encrypted databases only)"/>
+	<mx:Label x="297" y="45" text="(Encrypted databases only)"/>
 	<mx:Button label="Open"
 		enabled="{ selectedFile!=null}"
 		click=" openFile(hashTi.text)" 
 		y="72" width="82" x="85"/>
 
-	<mx:HRule left="10" right="10" bottom="70"/>
 
-
-	<ns1:CommercialAd left="10" right="10" bottom="10">
-	</ns1:CommercialAd>
+<!--	<ns1:CommercialAd left="10" right="10" bottom="10">
+	</ns1:CommercialAd>-->
 
 	
 </mx:TitleWindow>

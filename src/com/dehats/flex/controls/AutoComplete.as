@@ -415,7 +415,7 @@ public class AutoComplete extends ComboBox
 		{
 		    if(typedTextChanged)
 		    {
-			    cursorPosition = textInput.selectionBeginIndex;
+			    cursorPosition = textInput.selectionAnchorPosition;
 
 				updateDataProvider();
 
@@ -473,13 +473,13 @@ public class AutoComplete extends ComboBox
 		    if(event.keyCode == Keyboard.UP && prevIndex==0)
 			{
 	 		    textInput.text = _typedText;
-			    textInput.setSelection(textInput.text.length, textInput.text.length);
+			    textInput.selectRange(textInput.text.length, textInput.text.length);
 			    selectedIndex = -1; 
 			}
 		    else if(event.keyCode==Keyboard.ESCAPE && showingDropdown)
 			{
 	 		    textInput.text = _typedText;
-			    textInput.setSelection(textInput.text.length, textInput.text.length);
+			    textInput.selectRange(textInput.text.length, textInput.text.length);
 			    showingDropdown = false;
 			    dropdownClosed=true;
 			}
@@ -489,7 +489,7 @@ public class AutoComplete extends ComboBox
 				{
 					if( selectedItem==null) return;
 					textInput.text = selectedItem.toString();
-					textInput.setSelection(textInput.text.length, textInput.text.length);
+					textInput.selectRange(textInput.text.length, textInput.text.length);
 					dispatchEvent(new ListEvent(ListEvent.CHANGE));					
 				}
 				
@@ -550,12 +550,12 @@ public class AutoComplete extends ComboBox
 					if(index==0)
 					{
 					    textInput.text = _typedText+label.substr(_typedText.length);
-					    textInput.setSelection(textInput.text.length,_typedText.length);
+					    textInput.selectRange(textInput.text.length,_typedText.length);
 					}
 					else
 					{
 					    textInput.text = _typedText;
-					    textInput.setSelection(cursorPosition, cursorPosition);
+					    textInput.selectRange(cursorPosition, cursorPosition);
 					    removeHighlight = false;
 					}
 						
@@ -563,7 +563,7 @@ public class AutoComplete extends ComboBox
 			    else
 				{
 				    textInput.text = _typedText;
-				    textInput.setSelection(cursorPosition, cursorPosition);
+				    textInput.selectRange(cursorPosition, cursorPosition);
 				    removeHighlight = false;
 				}
 			    
@@ -572,7 +572,7 @@ public class AutoComplete extends ComboBox
 		    else if(typedText)
 		    	//Sets the selection when user navigates the suggestion list through
 		    	//arrows keys.
-				textInput.setSelection(_typedText.length,textInput.text.length);
+				textInput.selectRange(_typedText.length,textInput.text.length);
 		}
  	    if(showDropdown && !dropdown.visible)
  	    {

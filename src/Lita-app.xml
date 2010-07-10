@@ -4,15 +4,13 @@
 
 <application xmlns="http://ns.adobe.com/air/application/1.5.3">
 
-	<publisherID>3576A6E4965531EB9BF3A0C47EF5BAF8B6C6CC58.1</publisherID>
-
     <id>com.dehats.sqla</id>
 
     <filename>Lita</filename>
 
     <name>Lita</name> 
 
-    <version>1.7.1</version>
+    <version>1.7.2</version>
 
     <initialWindow>
 
@@ -31,7 +29,7 @@
         <image32x32>assets/icons/icon_032.png</image32x32>
 
         <image48x48>assets/icons/icon_048.png</image48x48>
-
+        
     </icon>
 
     <description>An administration interface for your SQLite databases.</description>

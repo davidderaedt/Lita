@@ -1,9 +1,12 @@
 /* CSS file */
-Alert
+@namespace s "library://ns.adobe.com/flex/spark";
+@namespace mx "library://ns.adobe.com/flex/mx";
+
+mx|Alert
 {
 	font-size:12;
 }
-FormItemLabel
+mx|FormItemLabel
 {
 	fontSize: 12;
 }
@@ -22,11 +25,11 @@ global
 	/*backgroundDisabledColor: #FF3366;*/
 	
 }
-ApplicationControlBar
+mx|ApplicationControlBar
 {
 	fillAlphas: 0.5, 1.0;
 }
-Label.MainTitle
+mx|Label.MainTitle
 {
 	fontSize: 20;
 	fontStyle: normal;
@@ -41,7 +44,7 @@ Label.MainTitle
 	fontSize: 12;
 }
 
-TitleWindow
+mx|TitleWindow
 {
 	borderColor: #165BE8;
 	borderAlpha: 1.0;
@@ -52,11 +55,11 @@ TitleWindow
 {
 	color:#FFFFFF;
 }
-Panel
+mx|Panel
 {
 	titleStyleName: panelTitle;
 }
-TabBar
+mx|TabBar
 {
 	disabled-color:#BBBBBB;
 	text-roll-over-color:#666666;
@@ -76,7 +79,7 @@ TabBar
 	color:#000000;
 }
 
-ToolTip
+mx|ToolTip
 {
 	fontSize: 11;
 }
@@ -90,7 +93,7 @@ ToolTip
 	color: #FFFFFF;
 	fontSize: 14;
 }
-Form
+mx|Form
 {
 	border-style:solid;
 	backgroundColor: #E4DDFE;
@@ -107,7 +110,7 @@ Form
 {
 }
 
-TextArea.statement
+mx|TextArea.statement
 {
 	font-family:"Courier New";
 	fontSize: 12;
