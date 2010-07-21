@@ -1,16 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:WindowedApplication xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute"
+<s:WindowedApplication 
+	xmlns:view="com.dehats.sqla.view.*" 
+	xmlns:fx="http://ns.adobe.com/mxml/2009" 
+	xmlns:s="library://ns.adobe.com/flex/spark" 
+	xmlns:mx="library://ns.adobe.com/flex/mx"
 	width="960"
 	height="600"
 	showStatusBar="false"
 	creationComplete=" onCreationComplete()"
 	invoke=" mainPM.onInvoke(event);"
-	implements="com.dehats.sqla.model.presentation.IMainView"
-	xmlns:view="com.dehats.sqla.view.*">
-
-	<mx:Style source="AppStyles.css"/>
-
-	<mx:Script>
+	implements="com.dehats.sqla.model.presentation.IMainView">
+	
+	<fx:Style source="AppStyles.css"/>
+	
+	<fx:Script>
 		<![CDATA[ 
 			import com.dehats.sqla.view.WelcomeDialog;
 			import com.dehats.sqla.view.CopyTableDialog;
@@ -28,23 +31,23 @@
 			import com.dehats.sqla.view.CreateTableDialog;
 			import mx.events.CloseEvent;
 			import com.dehats.sqla.model.MainModel; 
-
+			
 			[Bindable]
 			private var mainPM:MainPM = new MainPM(nativeApplication);
 			
 			
 			private function onCreationComplete():void
 			{								
-								
+				
 				nativeApplication.addEventListener(Event.EXITING, onExiting);
 				
 				nativeApplication.menu = nativeWindow.menu = mainPM.createNativeMenu();
-								
+				
 				mainPM.initialize( this);
 				
 				center();		
 			}	
-
+			
 			// workaround to fix the quit bug on OSX with the update framework			
 			private function onExiting(pEvt:Event):void
 			{
@@ -52,9 +55,9 @@
 				for (var i:int = 0; i < opened.length; i ++) {
 					opened[i].close();
 				}
-
+				
 			}	
-					
+			
 			private function center():void
 			{
 				nativeWindow.x = (Capabilities.screenResolutionX - nativeWindow.width) / 2; 
@@ -62,15 +65,15 @@
 			}	
 			
 			// Dialogs
-				
+			
 			public function promptCreateNewTable():void
 			{				
 				var newTableForm:CreateTableDialog =  PopUpManager.createPopUp(this, CreateTableDialog, true) as CreateTableDialog;				
 				newTableForm.mainPM = mainPM;				
 				PopUpManager.centerPopUp(newTableForm);			
 			}
-		
-
+			
+			
 			public function promptOpenFileDialog(pClosable:Boolean=false):void
 			{				
 				var win:OpenFileDialog = PopUpManager.createPopUp(this, OpenFileDialog, true) as OpenFileDialog;
@@ -86,7 +89,7 @@
 				win.pm = mainPM;
 				PopUpManager.centerPopUp(win);
 			}
-
+			
 			public function promptCopyTableDialog():void
 			{
 				structureTab.promptCopyTableDialog();
@@ -98,14 +101,14 @@
 				win.pm = mainPM;
 				PopUpManager.centerPopUp(win);				
 			}
-
+			
 			public function promptUpgradeEncryptionDialog():void
 			{
 				var win:UpgradeEncryptionDialog = PopUpManager.createPopUp(this, UpgradeEncryptionDialog, true) as UpgradeEncryptionDialog;
 				win.pm = mainPM;
 				PopUpManager.centerPopUp(win);				
 			}
-
+			
 			public function promptAboutDialog():void
 			{
 				var win:AboutWin = PopUpManager.createPopUp(this, AboutWin, true) as AboutWin;
@@ -123,73 +126,77 @@
 			}
 			
 		]]>
-	</mx:Script>
-
-		<mx:ApplicationControlBar x="29" y="49" dock="true">
+	</fx:Script>
+	
+	
+	<mx:ApplicationControlBar x="0" y="0" dock="true" width="100%">
 		
-			<mx:Image source="{ AssetManager.LOGO_ICON}"/>
-			
-			<mx:Label text="{ mainPM.docTitle}" 
-				toolTip="{ mainPM.fileInfos}" 
-				fontSize="12"/>
-			
-			<mx:Spacer width="100%"/>
-			
-			<mx:Button label="Open DB File"
-				icon="{AssetManager.ICON_OPEN_DB}"
-				click=" mainPM.promptOpenFile()"/>
-				
-			<mx:Button label="Create DB File"
-				icon="{ AssetManager.ICON_CREATE_DB}"
-				click=" mainPM.promptCreateDBFile()"/>
-				
-			<mx:Button label="Re-encrypt"
-				enabled="{mainPM.isValidDBOpen}"
-				icon="{ AssetManager.ICON_KEY_DB}"
-				click=" mainPM.promptReencrypt();"/>
-			
-			<mx:Button label="Export DB"
-				enabled="{mainPM.isValidDBOpen}"
-				icon="{AssetManager.ICON_EXPORT_DB}"
-				click=" mainPM.exportDB()"/>
-			
-			<mx:Button label="Compact DB"
-				enabled="{mainPM.isValidDBOpen}"
-				icon="{AssetManager.ICON_COMPACT_DB}"
-				click=" mainPM.compact()"/>
-
-			<mx:Button label="About"
-				icon="{ AssetManager.ICON_HELP}"
-				click=" mainPM.promptAboutDialog()"/>
-					
-		</mx:ApplicationControlBar>
-
-		<mx:Label color="#FFFFFF" y="10" right="10"
-			text="{'Last statement executed in '+mainPM.lastExecTime+' ms'}" />
-
-		<view:TableListView
-			enabled="{ mainPM.isValidDBOpen}"
-			pm="{ mainPM.tableListPM}" 
-			left="10" top="10" bottom="10" width="189"/>		
+		<mx:Image source="{ AssetManager.LOGO_ICON}"/>
 		
-		<mx:TabNavigator left="207" bottom="10" top="10" right="10" creationPolicy="all"
-			selectedIndex="{mainPM.selectedTab}"
-			enabled="{ mainPM.isValidDBOpen}" 
-			selectedTabTextStyleName="SelectedTabText">
-
-			<view:SQLStructureView id="structureTab" label="Structure" width="100%" height="100%" 
-				pm="{ mainPM.sqlStructureViewPM }"/>
-
-			<view:SQLDataView id="dataView" label="Data" width="100%" height="100%" 
+		<mx:Label text="{ mainPM.docTitle}" 
+				  toolTip="{ mainPM.fileInfos}" 
+				  fontSize="12"/>
+		
+		<mx:Spacer width="100%"/>
+		
+		<mx:Button label="Open DB File"
+				   icon="{AssetManager.ICON_OPEN_DB}"
+				   click=" mainPM.promptOpenFile()"/>
+		
+		<mx:Button label="Create DB File"
+				   icon="{ AssetManager.ICON_CREATE_DB}"
+				   click=" mainPM.promptCreateDBFile()"/>
+		
+		<mx:Button label="Re-encrypt"
+				   enabled="{mainPM.isValidDBOpen}"
+				   icon="{ AssetManager.ICON_KEY_DB}"
+				   click=" mainPM.promptReencrypt();"/>
+		
+		<mx:Button label="Export DB"
+				   enabled="{mainPM.isValidDBOpen}"
+				   icon="{AssetManager.ICON_EXPORT_DB}"
+				   click=" mainPM.exportDB()"/>
+		
+		<mx:Button label="Compact DB"
+				   enabled="{mainPM.isValidDBOpen}"
+				   icon="{AssetManager.ICON_COMPACT_DB}"
+				   click=" mainPM.compact()"/>
+		
+		<mx:Button label="About"
+				   icon="{ AssetManager.ICON_HELP}"
+				   click=" mainPM.promptAboutDialog()"/>
+		
+	</mx:ApplicationControlBar>
+	
+	<mx:Label y="50" right="10"
+			  text="{'Last statement executed in '+mainPM.lastExecTime+' ms'}" />
+	
+	<view:TableListView
+		enabled="{ mainPM.isValidDBOpen}"
+		pm="{ mainPM.tableListPM}" 
+		left="10" top="51" bottom="10" width="189"/>		
+	
+	<mx:TabNavigator left="207" bottom="10" top="51" right="10" creationPolicy="all"
+					 selectedIndex="{mainPM.selectedTab}"
+					 enabled="{ mainPM.isValidDBOpen}" 
+					 selectedTabTextStyleName="SelectedTabText">
+		
+		<view:SQLStructureView id="structureTab" label="Structure" width="100%" height="100%" 
+							   pm="{ mainPM.sqlStructureViewPM }"/>
+		
+		
+		<s:NavigatorContent label="Data">
+			<view:SQLDataView id="dataView"  width="100%" height="100%" 
 				pm="{ mainPM.sqldataViewPM}"/>			
-
-			<view:IndicesView label="Indices" width="100%" height="100%" 
-				pm="{ mainPM.indicesPM}"/>
-			
-			<view:SQLStatementView label="SQL" width="100%" height="100%"
-				pm="{ mainPM.sqlStatementPM}" />
-					
-		</mx:TabNavigator>		
+		</s:NavigatorContent>
 		
-
-</mx:WindowedApplication>
+		<view:IndicesView label="Indices" width="100%" height="100%" 
+						  pm="{ mainPM.indicesPM}"/>
+		
+		<view:SQLStatementView label="SQL" width="100%" height="100%"
+							   pm="{ mainPM.sqlStatementPM}" />
+		
+	</mx:TabNavigator>		
+	
+	
+</s:WindowedApplication>

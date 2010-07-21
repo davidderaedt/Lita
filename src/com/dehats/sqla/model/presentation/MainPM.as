@@ -35,7 +35,7 @@ package com.dehats.sqla.model.presentation
 		public static const TAB_SQL:int=3;
 
 		
-		public var isValidDBOpen:Boolean=false;
+		public var isValidDBOpen:Boolean=true;
 		public var docTitle:String;
 		public var fileInfos:String;
 		public var lastExecTime:int;
@@ -77,18 +77,21 @@ package com.dehats.sqla.model.presentation
 			indicesPM = new IndicesPM( this);
 			sqldataViewPM = new SQLDataViewPM( this);
 			sqlStatementPM = new SQLStatementPM(this);			
-			sqlStructureViewPM = new SQLStructureViewPM(this);
+			sqlStructureViewPM = new SQLStructureViewPM(this); 
 			
 			nativeMenuMgr = new NativeMenuManager(this, pNativeApp);
-				
+			
 		}
 		
 		
 		public function initialize(pMainView:IMainView):void
 		{		
+			isValidDBOpen=false;
+			
 			mainView = pMainView;
 			
 			initializeUpdater();
+			
 		}	
 				
 		public function createNativeMenu():NativeMenu
@@ -301,11 +304,11 @@ package com.dehats.sqla.model.presentation
 			selectRecord( null );
 			
 			refreshRecords();
-			
+						
 			sqlStructureViewPM.selectedTable = selectedTable;	
 			sqldataViewPM.selectedTable = selectedTable;		
 			tableListPM.selectedTable = selectedTable;
-			sqldataViewPM.tableRecords = mainModel.tableRecords;
+			sqldataViewPM.tableRecords = mainModel.tableRecords;			
 			
 		}
 

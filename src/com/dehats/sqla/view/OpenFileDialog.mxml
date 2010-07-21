@@ -79,7 +79,7 @@
 		change=" selectedFile = new File( fileListCmb.selectedItem.path)"
 		labelField="name"
 		dataProvider="{ pm.recentlyOpenedFiles }"
-		left="85" right="123"></mx:ComboBox>
+		left="85" right="153"></mx:ComboBox>
 
 	<mx:TextInput id="pathTi" left="85"
 		visible="false"
@@ -88,7 +88,7 @@
 	<mx:Button 
 		toolTip="Browse for a file"
 		click=" promptOpen()"
-		label="..." y="11" right="85" width="30"/>
+		label="..." y="11" right="114" width="30"/>
 		
 	
 	<mx:Label x="38" text="DB File" y="14"/>

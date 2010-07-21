@@ -14,6 +14,7 @@ package com.dehats.sqla.model.presentation
 		
 		public var selectedColumn:SQLColumnSchema;
 		public var selectedTable:SQLTableSchema;
+		public var isNewFieldFormEnabled:Boolean=true;
 		
 		private var mainPM:MainPM;
 		

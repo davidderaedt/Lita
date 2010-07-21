@@ -2,6 +2,17 @@
 @namespace s "library://ns.adobe.com/flex/spark";
 @namespace mx "library://ns.adobe.com/flex/mx";
 
+global
+{
+	color: #444466;
+	fontFamily: Arial;
+	font-size:11;
+	backgroundGradientAlphas: 1.0, 1.0;
+	backgroundGradientColors: #075CF7, #02074B;
+	/*backgroundDisabledColor: #FF3366;*/
+	
+}
+
 mx|Alert
 {
 	font-size:12;
@@ -16,15 +27,7 @@ mx|FormItemLabel
 	fontSize: 12;
 }
 
-global
-{
-	fontFamily: Arial;
-	font-size:11;
-	backgroundGradientAlphas: 1.0, 1.0;
-	backgroundGradientColors: #075CF7, #02074B;
-	/*backgroundDisabledColor: #FF3366;*/
-	
-}
+
 mx|ApplicationControlBar
 {
 	fillAlphas: 0.5, 1.0;
@@ -46,7 +49,7 @@ mx|Label.MainTitle
 
 mx|TitleWindow
 {
-	borderColor: #165BE8;
+	/*borderColor: #165BE8;*/
 	borderAlpha: 1.0;
 	titleStyleName: titleWindowTitle;
 }
@@ -64,7 +67,7 @@ mx|TabBar
 	disabled-color:#BBBBBB;
 	text-roll-over-color:#666666;
 	text-selected-color:#333333;
-	color: #FFFFFF;
+	/*color: #FFFFFF;*/
 	fontSize: 14;
 	fontWeight: normal;
 	tabStyleName: tabBarTab;
@@ -76,7 +79,7 @@ mx|TabBar
 
 .SelectedTabText
 {
-	color:#000000;
+	/*color:#000000;*/
 }
 
 mx|ToolTip
@@ -85,12 +88,10 @@ mx|ToolTip
 }
 .titleWindowTitle
 {
-	color: #FFFFFF;
 	fontSize: 14;
 }
 .panelTitle
 {
-	color: #FFFFFF;
 	fontSize: 14;
 }
 mx|Form

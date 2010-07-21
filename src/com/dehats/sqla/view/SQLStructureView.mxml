@@ -5,7 +5,7 @@
 		   xmlns:components="com.dehats.flex.controls.*"
 		   xmlns:mx="http://www.adobe.com/2006/mxml"
 		   xmlns:ns1="com.adobe.flex.extras.controls.*">
-		   
+	
 	<mx:Script>
 		<![CDATA[
 			import mx.managers.PopUpManager;
@@ -24,14 +24,15 @@
 				var col:SQLColumnSchema = pItem as  SQLColumnSchema;
 				return SQLType.getAffinity( col.dataType);
 			}
-		
+			
 			private function addField():void
 			{				
-				//typeCMB.selectedItem.toString()
+				
 				if(typeACTI.text=="") typeACTI.text="TEXT";
 				pm.addColumn(colNameTi.text, typeACTI.text, nullCB.selected, uniqueCb.selected, defaultTi.text);
 				colNameTi.text="";
 				colNameTi.setFocus();
+				
 			}
 			
 			public function promptCopyTableDialog():void
@@ -43,38 +44,38 @@
 			
 		]]>
 	</mx:Script>
-
+	
 	<mx:Label x="10" y="10" 
-		styleName="ImportantLabel" 
-		text="Table Name"/>
+			  styleName="ImportantLabel" 
+			  text="Table Name"/>
 	
 	<mx:TextInput id="tableNameTi"
-		enter="pm.renameTable( tableNameTi.text)"
-		text="{ pm.selectedTable.name}" 
-		width="118"  x="102" y="8" />
+				  enter="pm.renameTable( tableNameTi.text)"
+				  text="{ pm.selectedTable.name}" 
+				  width="118"  x="102" y="8" />
 	
 	<mx:Button x="228" y="8" label="Rename" 
-		icon="{ AssetManager.ICON_REFRESH_TABLE}"
-		click="pm.renameTable( tableNameTi.text)"/>
-		
-
+			   icon="{ AssetManager.ICON_REFRESH_TABLE}"
+			   click="pm.renameTable( tableNameTi.text)"/>
+	
+	
 	<mx:Button y="8" label="Export Structure" right="131"
-		icon="{AssetManager.ICON_EXPORT_TABLE}"
-		click=" pm.exportTable()"/>
+			   icon="{AssetManager.ICON_EXPORT_TABLE}"
+			   click=" pm.exportTable()"/>
 	
 	<mx:Button label="Delete Table"  y="8" right="10"
-		icon="{AssetManager.ICON_DELETE}"
-		click=" pm.askDropCurrentTable()"/>
-
+			   icon="{AssetManager.ICON_DELETE}"
+			   click=" pm.askDropCurrentTable()"/>
+	
 	<mx:Button y="8" 
-		icon="{AssetManager.ICON_CREATE_TABLE}"
-		label="Copy Table"
-		click="  promptCopyTableDialog()" right="273"/>
+			   icon="{AssetManager.ICON_CREATE_TABLE}"
+			   label="Copy Table"
+			   click="  promptCopyTableDialog()" right="273"/>
 	
 	<mx:DataGrid id="columnsDG"
-		change=" pm.selectColumn( columnsDG.selectedItem as SQLColumnSchema )"
-		selectedItem="{pm.selectedColumn}"
-		dataProvider="{ pm.selectedTable.columns }" left="10" right="10" bottom="291" top="38">
+				 change=" pm.selectColumn( columnsDG.selectedItem as SQLColumnSchema )"
+				 selectedItem="{pm.selectedColumn}"
+				 dataProvider="{ pm.selectedTable.columns }" left="10" right="10" bottom="291" top="38">
 		<mx:columns>
 			<mx:DataGridColumn headerText="Field Name" dataField="name"/>
 			<mx:DataGridColumn headerText="Data Type" dataField="dataType" width="100"/>
@@ -87,54 +88,54 @@
 	</mx:DataGrid>
 	
 	<mx:HBox bottom="10" height="273" left="10" right="10">
-	
+		
 		<mx:Form x="10" bottom="10" height="100%"
-			enabled="{ pm.selectedColumn!=null}" width="50%">
+				 enabled="{ pm.selectedColumn!=null}" width="50%">
 			
 			<mx:FormHeading label="Selected Field"/>
 			<mx:FormItem label="Field Name" direction="horizontal">			
 				<mx:TextInput id="selectedColNameTi" 
-					enter="pm.renameColumn( selectedColNameTi.text);"
-					text="{ pm.selectedColumn.name}"/>
+							  enter="pm.renameColumn( selectedColNameTi.text);"
+							  text="{ pm.selectedColumn.name}"/>
 				<mx:Button label="Rename"
-					icon="{AssetManager.ICON_REFRESH}"
-					click=" pm.renameColumn( selectedColNameTi.text);"/>				
+						   icon="{AssetManager.ICON_REFRESH}"
+						   click=" pm.renameColumn( selectedColNameTi.text);"/>				
 			</mx:FormItem>
 			<mx:FormItem label="Field Type">
-					<mx:Label id="dataTypeLabel" text="{ pm.selectedColumn.dataType }"/>								
+				<mx:Label id="dataTypeLabel" text="{ pm.selectedColumn.dataType }"/>								
 			</mx:FormItem>
 			<mx:FormItem label="Allow null">
-					<mx:CheckBox enabled="false" selected="{ pm.selectedColumn.allowNull}"	/>					
+				<mx:CheckBox enabled="false" selected="{ pm.selectedColumn.allowNull}"	/>					
 			</mx:FormItem>
 			<mx:FormItem label="Is Primary key">
-					<mx:CheckBox enabled="false" selected="{ pm.selectedColumn.primaryKey }"/>								
+				<mx:CheckBox enabled="false" selected="{ pm.selectedColumn.primaryKey }"/>								
 			</mx:FormItem>
 			<mx:FormItem label="Auto increment">
-					<mx:CheckBox enabled="false" selected="{ pm.selectedColumn.autoIncrement }"/>								
+				<mx:CheckBox enabled="false" selected="{ pm.selectedColumn.autoIncrement }"/>								
 			</mx:FormItem>
 			<mx:FormItem label="Add Index" direction="horizontal">
 				<mx:TextInput id="indexNameTi"/>
 				<mx:Button label="Add" 
-					enabled="{indexNameTi.text.length>0}"
-					icon="{AssetManager.ICON_ADD_KEY}"
-					click=" pm.addIndex( indexNameTi.text); indexNameTi.text=''"/>
+						   enabled="{indexNameTi.text.length>0}"
+						   icon="{AssetManager.ICON_ADD_KEY}"
+						   click=" pm.addIndex( indexNameTi.text); indexNameTi.text=''"/>
 			</mx:FormItem>
 			<mx:FormItem>
 			</mx:FormItem>
 			
 			<mx:FormItem>
 				<mx:Button label="Delete Field" 
-					icon="{ AssetManager.ICON_DELETE}"
-					click=" pm.askDropColumn()"/>			
+						   icon="{ AssetManager.ICON_DELETE}"
+						   click=" pm.askDropColumn()"/>			
 			</mx:FormItem>
 			
 		</mx:Form>
-
+		
 		<mx:Form 
 			defaultButton="{addFiledBt}"
-			enabled="{ pm.selectedTable != null}" 
+			enabled="{ pm.isNewFieldFormEnabled}" 
 			x="345" bottom="10" height="100%" width="50%">
-		
+			
 			<mx:FormHeading label="New Field" />
 			
 			<mx:FormItem label="Field Name">
@@ -142,7 +143,7 @@
 			</mx:FormItem>
 			<mx:FormItem label="Field Type">
 				<components:AutoComplete id="typeACTI" typedText="TEXT"
-					dataProvider="{SQLType.AFFINITY_TYPES}"/>
+										 dataProvider="{SQLType.AFFINITY_TYPES}"/>
 				<mx:Label text="(use up/down arrows for suggestions)"/>
 			</mx:FormItem>
 			<mx:FormItem label="Default Value">
@@ -156,13 +157,13 @@
 			</mx:FormItem>
 			<mx:FormItem>
 				<mx:Button id="addFiledBt"
-					label="Add Field"
-					enabled="{colNameTi.text.length>0}"
-					icon="{ AssetManager.ICON_ADD}"
-					click=" addField();"/>
+						   label="Add Field"
+						   enabled="{colNameTi.text.length>0}"
+						   icon="{ AssetManager.ICON_ADD}"
+						   click=" addField();"/>
 			</mx:FormItem>
 		</mx:Form>
-			
+		
 	</mx:HBox>
-				
+	
 </mx:Canvas>
