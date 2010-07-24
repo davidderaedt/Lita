@@ -382,7 +382,8 @@ package com.dehats.sqla.model.presentation
 		public function deleteRecord():void
 		{
 			mainModel.deleteRecord(selectedTable, selectedRecord);
-			sqldataViewPM.selectedRecord = null;
+			sqldataViewPM.tableRecords = mainModel.tableRecords;
+			selectRecord(null );	
 		}
 				
 		public function exportRecords():void

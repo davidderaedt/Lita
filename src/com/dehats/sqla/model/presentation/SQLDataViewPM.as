@@ -35,7 +35,7 @@ package com.dehats.sqla.model.presentation
 
 		public function selectRecord(pData:Object):void
 		{
-			mainPM.selectRecord(pData);			
+			if(pData!=selectedRecord) mainPM.selectRecord(pData);			
 		}	
 
 		public function updateRecord(pModifiedItem:Object):void
@@ -75,7 +75,7 @@ package com.dehats.sqla.model.presentation
 		
 		private function emptyTableAnswer(pEvt:CloseEvent):void
 		{
-			if( pEvt.detail == Alert.YES) mainPM.emptyTable();//mainModel.emptyCurrentTable();
+			if( pEvt.detail == Alert.YES) mainPM.emptyTable();
 		}	
 
 

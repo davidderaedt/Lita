@@ -14,21 +14,15 @@
 			import com.dehats.air.sqlite.SQLType;
 			import com.dehats.flex.controls.DateTimeEditor;
 			import com.dehats.sqla.model.AssetManager;
-			import com.dehats.sqla.model.MainModel;
-			import com.dehats.sqla.model.presentation.MainPM;
 			import com.dehats.sqla.model.presentation.SQLDataViewPM;
 			
 			import mx.binding.utils.BindingUtils;
 			import mx.containers.FormHeading;
 			import mx.containers.FormItem;
-			import mx.controls.Alert;
-			import mx.controls.Button;
 			import mx.controls.CheckBox;
-			import mx.controls.DateField;
 			import mx.controls.Label;
 			import mx.controls.dataGridClasses.DataGridColumn;
 			import mx.core.UIComponent;
-			import mx.events.CloseEvent;
 			
 			import spark.components.TextArea;
 			import spark.components.TextInput;
@@ -50,7 +44,7 @@
 			{
 				pm.addEventListener(SQLDataViewPM.EVENT_TABLE_SELECTED, onTableSelected);		
 				
-				BindingUtils.bindSetter(fillForm, this, ["pm", "selectedRecord"]);	
+				BindingUtils.bindSetter(fillSelectionForm, this, ["pm", "selectedRecord"]);	
 			}	
 			
 			
@@ -114,6 +108,7 @@
 					
 					// add datadgrid columns
 					var dgc:DataGridColumn = new DataGridColumn(col.name);
+					dgc.width = ( (this.measuredWidth-20) / (totalCols-1) );
 					coltab.push(dgc);
 					
 				}
@@ -137,12 +132,11 @@
 				pm.selectRecord(pData);
 			}
 			
-			private function fillForm(pData:Object):void
+			private function fillSelectionForm(pData:Object):void
 			{
 				
-				// fill form
 				if(pm.selectedTable==null) return;
-				
+								
 				for ( var i:int = 0 ; i < pm.selectedTable.columns.length ; i++)
 				{
 					var col:SQLColumnSchema = pm.selectedTable.columns[i] as SQLColumnSchema;
@@ -292,6 +286,7 @@
 					case SQLType.XMLLIST:
 						var ta:TextArea =new TextArea();
 						ta.percentWidth=100;
+						ta.height=50;
 						return ta;
 						break;
 					
@@ -317,18 +312,10 @@
 					defaultComp.setFocus();
 				}
 				
+				// we shouldn"t need to do that but for some reason the first call
+				// to this method (caused by data binding) doesnt work in case of a creation
+				fillSelectionForm( pm.selectedRecord);
 			}
-			
-			private function test ():void
-			{
-				trace(dynForm2.numElements)
-				var fi:FormItem = new FormItem();
-				var ti:TextInput = new TextInput();
-				fi.addElement(ti);
-				dynForm2.addElement(fi);
-				trace(dynForm2.numElements);				
-			}
-			
 			
 			
 		]]>
@@ -360,8 +347,9 @@
 		
 		<mx:HDividedBox width="100%" height="50%" horizontalAlign="center">
 			
+			<!-- tmp:visible used instead of enable because enable causes bugs -->
 			<mx:Form  id="dynForm"  
-					  enabled="{ dataDG.selectedItem!=null}" 
+					  visible="{pm.selectedRecord!=null}"
 					  height="100%" width="50%">
 				
 				<mx:FormHeading label="Selected Record" />
@@ -384,7 +372,6 @@
 			
 			
 			<mx:Form id="dynForm2" 
-					 click=" test()"
 					 height="100%"  width="50%">
 				
 				<mx:FormHeading label="New Record" />

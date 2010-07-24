@@ -4,21 +4,23 @@
 		   width="800"
 		   xmlns:components="com.dehats.flex.controls.*"
 		   xmlns:mx="http://www.adobe.com/2006/mxml"
-		   xmlns:ns1="com.adobe.flex.extras.controls.*">
+		   xmlns:ns1="com.adobe.flex.extras.controls.*" xmlns:s="library://ns.adobe.com/flex/spark">
 	
 	<mx:Script>
 		<![CDATA[
-			import mx.managers.PopUpManager;
-			import mx.controls.dataGridClasses.DataGridColumn;
 			import com.dehats.air.sqlite.SQLType;
-			import com.dehats.sqla.model.presentation.SQLStructureViewPM;
-			import com.dehats.sqla.model.presentation.MainPM;
-			import com.dehats.sqla.model.MainModel;
 			import com.dehats.sqla.model.AssetManager;
+			import com.dehats.sqla.model.MainModel;
+			import com.dehats.sqla.model.presentation.MainPM;
+			import com.dehats.sqla.model.presentation.SQLStructureViewPM;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.dataGridClasses.DataGridColumn;
+			import mx.managers.PopUpManager;
 			
 			[Bindable]
 			public var pm:SQLStructureViewPM;
-			
+						
 			private function getAffinity(pItem:Object, pCol:DataGridColumn):String
 			{
 				var col:SQLColumnSchema = pItem as  SQLColumnSchema;
@@ -27,9 +29,8 @@
 			
 			private function addField():void
 			{				
-				
-				if(typeACTI.text=="") typeACTI.text="TEXT";
-				pm.addColumn(colNameTi.text, typeACTI.text, nullCB.selected, uniqueCb.selected, defaultTi.text);
+				if(typeACTI.textInput.text=="") typeACTI.textInput.text="TEXT";				
+				pm.addColumn(colNameTi.text, typeACTI.textInput.text, nullCB.selected, uniqueCb.selected, defaultTi.text);
 				colNameTi.text="";
 				colNameTi.setFocus();
 				
@@ -90,7 +91,7 @@
 	<mx:HBox bottom="10" height="273" left="10" right="10">
 		
 		<mx:Form x="10" bottom="10" height="100%"
-				 enabled="{ pm.selectedColumn!=null}" width="50%">
+				 visible="{ pm.selectedColumn!=null}" width="50%">
 			
 			<mx:FormHeading label="Selected Field"/>
 			<mx:FormItem label="Field Name" direction="horizontal">			
@@ -142,9 +143,9 @@
 				<mx:TextInput id="colNameTi"/>
 			</mx:FormItem>
 			<mx:FormItem label="Field Type">
-				<components:AutoComplete id="typeACTI" typedText="TEXT"
-										 dataProvider="{SQLType.AFFINITY_TYPES}"/>
-				<mx:Label text="(use up/down arrows for suggestions)"/>
+				<s:ComboBox id="typeACTI" 
+							selectedIndex="0"							
+							dataProvider="{new ArrayCollection(SQLType.AFFINITY_TYPES)}"/>
 			</mx:FormItem>
 			<mx:FormItem label="Default Value">
 				<mx:TextInput id="defaultTi"/>
@@ -157,7 +158,7 @@
 			</mx:FormItem>
 			<mx:FormItem>
 				<mx:Button id="addFiledBt"
-						   label="Add Field"
+						   label="Create Field"
 						   enabled="{colNameTi.text.length>0}"
 						   icon="{ AssetManager.ICON_ADD}"
 						   click=" addField();"/>
@@ -165,5 +166,6 @@
 		</mx:Form>
 		
 	</mx:HBox>
+
 	
 </mx:Canvas>
